@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="panel-section">
+    <h1>Görev Al</h1>
+    <p>Aktif görevleri aşağıda görebilirsiniz.</p>
+    {% if messages %}
+        <ul class="form-messages">
+            {% for message in messages %}
+                <li class="{{ message.tags }}">{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    <div class="tasks-grid">
+        {% for task in tasks %}
+        <div class="task-box">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+                <strong>{{ task.name }}</strong>
+                {% if task.priority == 'acil' %}
+                    <span class="priority-label priority-acil">Acil</span>
+                {% elif task.priority == 'orta' %}
+                    <span class="priority-label priority-orta">Orta Öncelik</span>
+                {% endif %}
+            </div>
+            <span>Hayvan Sayısı: {{ task.animal_count }}</span><br>
+            <span>Görev Bitiş Süresi: {{ task.end_time|date:'d F, H:i' }}</span><br>
+            <span>Durum: {{ task.status }}</span><br>
+            <form method="post" action="">
+                {% csrf_token %}
+                <input type="hidden" name="task_id" value="{{ task.id }}">
+                <button type="submit" class="btn btn-complete">Görev Al</button>
+            </form>
+        </div>
+        {% empty %}
+        <p>Şu anda alınabilecek görev yok.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %} 

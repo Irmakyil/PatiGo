@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="hero-section">
+    <h1>Kampüs Hayvanları İçin Dijital Destek Platformu</h1>
+    <div class="about-box">
+        <div class="about-bg"></div>
+        <div class="about-content">
+            <h2>Hakkında</h2>
+            <p>Pati Dostu, kampüsteki sokak hayvanlarına destek olmak için oluşturulmuş dijital bir platformdur. Gönüllüler
+                aracılığıyla beslenme noktalarının düzenli kontrolü, mama tedariki ve hayvanların genel sağlık durumunun
+                takibi yapılmaktadır. Sistem üzerinden görev alabilir, raporlar oluşturabilir ve kampüs hayvanlarının iyi
+                bir yaşam sürmesi için katkıda bulunabilirsiniz.</p>
+            <div class="about-buttons">
+                {% if not user.is_authenticated %}
+                <a href="/gonullu-ol" class="btn btn-main">Gönüllü Ol</a>
+                {% endif %}
+                <a href="/gorev-noktalari" class="btn btn-main">Görev Noktaları</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="stats-section">
+    <div class="stat-box">
+        <span class="stat-number">24</span>
+        <span class="stat-label">Aktif Beslenme Noktası</span>
+    </div>
+    <div class="stat-box">
+        <span class="stat-number">127</span>
+        <span class="stat-label">Kayıtlı Gönüllü</span>
+    </div>
+    <div class="stat-box">
+        <span class="stat-number">5</span>
+        <span class="stat-label">Yemek Kaynağı</span>
+    </div>
+    <div class="stat-box">
+        <span class="stat-number">356 Kg</span>
+        <span class="stat-label">Haftalık Yemek Artığı Değerlendirme</span>
+    </div>
+</div>
+<div class="features-section">
+    <h2>Patigo Özellikleri</h2>
+    <div class="features-grid">
+        <div class="feature-box">
+            <img src="{% static 'images/harita.png' %}" alt="Harita" class="feature-img">
+            <strong>Beslenme Noktaları Haritası</strong>
+            <p>Kampüs içindeki tüm beslenme noktalarını harita üzerinde görüntüleyin, durumlarını takip edin.</p>
+        </div>
+        <div class="feature-box">
+            <img src="{% static 'images/yemek_artigi.png' %}" alt="Planlama" class="feature-img">
+            <strong>Yemek Artığı Planlaması</strong>
+            <p>Kampüs içindeki tüm beslenme noktalarını harita üzerinde görüntüleyin, durumlarını takip edin.</p>
+        </div>
+        <div class="feature-box">
+            <img src="{% static 'images/gonullu.png' %}" alt="Takip Sistemi" class="feature-img">
+            <strong>Gönüllü Takip Sistemi</strong>
+            <p>Gönüllülerin görevlerini ve takibini kolayca yönetin, çakışmaları önleyin.</p>
+        </div>
+    </div>
+    <div class="features-grid">
+        <div class="feature-box">
+            <img src="{% static 'images/takip.png' %}" alt="Beslenme Takibi" class="feature-img">
+            <strong>Beslenme Takibi</strong>
+            <p>Hangi beslenme noktasında ne zaman, hangi hayvanın beslendiğini takip edin.</p>
+        </div>
+        <div class="feature-box">
+            <img src="{% static 'images/rozet.png' %}" alt="Rozetler" class="feature-img">
+            <strong>Beslenme Noktaları Rozetleri</strong>
+            <p>Katkılarınızla rozetler kazanın, gönüllü sıralamalarında yükselin.</p>
+        </div>
+        <div class="feature-box">
+            <img src="{% static 'images/acil_durum.png' %}" alt="Acil Durum" class="feature-img">
+            <strong>Acil Durum Bildirimleri</strong>
+            <p>Hayvanlardaki sağlık sorunları, beslenme eksiklikleri için acil durum bildirimlerini yönetin.</p>
+        </div>
+    </div>
+</div>
+</div>
+{% endblock %}

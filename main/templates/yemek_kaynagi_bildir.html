@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="panel-section">
+    <h1>Yemek Kaynağı Bildir</h1>
+    <div class="add-task-box">
+        <p>Kampüs dostlarımız için yemek artığı paylaş!<br>Bir tabak mama, bir hayat kurtarır.</p>
+        {% if messages %}
+            <ul class="form-messages">
+                {% for message in messages %}
+                    <li class="{{ message.tags }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+        <form method="post" enctype="multipart/form-data" action="">
+            {% csrf_token %}
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="location">Konum</label>
+                    <input type="text" id="location" name="location" placeholder="Konum Bilgisi Girin" required>
+                </div>
+                <div class="form-group">
+                    <label for="amount">Yaklaşık Miktar</label>
+                    <input type="text" id="amount" name="amount" placeholder="Yaklaşık Miktar Seçin" required>
+                </div>
+                <div class="form-group">
+                    <label for="description">Açıklama</label>
+                    <textarea id="description" name="description" rows="2" placeholder="İsteğe bağlı açıklama ekleyin"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="photo">Fotoğraf</label>
+                    <input type="file" id="photo" name="photo" accept="image/*">
+                </div>
+            </div>
+            <button type="submit" class="btn btn-main" style="width:100%;margin-top:1.2rem;">Bildir</button>
+        </form>
+    </div>
+    <div class="tasks-list-section">
+        <h2>Son Bildirilen Yemek Kaynakları</h2>
+        <div class="foods-grid">
+        {% for food in foods %}
+            <div class="food-box">
+                <div style="display:flex;justify-content:space-between;align-items:center;">
+                    <span><b>Konum:</b> {{ food.location }}</span>
+                    <span class="food-status food-status-{{ food.status }}">{{ food.get_status_display }}</span>
+                </div>
+                <span><b>Miktar:</b> {{ food.amount }}</span><br>
+                <span><b>Gönüllü:</b> {{ food.reported_by.username }}</span><br>
+                <span><b>Tarih/Saat:</b> {{ food.reported_at|date:'d.m.Y, H:i' }}</span><br>
+                {% if food.photo %}
+                    <img src="{{ food.photo.url }}" alt="Fotoğraf" class="food-photo">
+                {% endif %}
+            </div>
+        {% empty %}
+            <p>Henüz yemek kaynağı bildirimi yok.</p>
+        {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %} 

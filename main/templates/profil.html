@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="profile-section">
+    <h1>Profil</h1>
+    <div class="profile-info">
+        <div class="profile-details">
+            <p><b>Kullanıcı Adı:</b> {{ user.username }}</p>
+            <p><b>E-posta:</b> {{ user.email }}</p>
+            <p><b>Kullanıcı Tipi:</b> {{ profile.get_user_type_display }}</p>
+            <p><b>Üyelik Tarihi:</b> {{ profile.join_date|date:'d-m-Y' }}</p>
+        </div>
+        {% if profile.user_type == 'gonullu' %}
+        <div class="profile-badges">
+            <b>Kazanılan Rozetler:</b><br>
+            <div class="badges-list">
+                <img src="{% static 'images/mama_dagiticisi.png' %}" alt="Mama Dağıtıcısı" class="badge-img">
+                <img src="{% static 'images/su_kahramani.png' %}" alt="Pati Koruyucu" class="badge-img">
+                <img src="{% static 'images/temizlik_ustasi.png' %}" alt="Su Kahramanı" class="badge-img">
+                <img src="{% static 'images/pati_koruyucu.png' %}" alt="Temizlik Ustası" class="badge-img">
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %} 

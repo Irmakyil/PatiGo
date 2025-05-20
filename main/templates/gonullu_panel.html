@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="panel-section">
+    <h1>Gönüllü Paneli</h1>
+    {% if messages %}
+        <ul class="form-messages">
+            {% for message in messages %}
+                <li class="{{ message.tags }}">{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    <h2>Alınan Görevler:</h2>
+    <div class="tasks-grid">
+        {% for task in tasks %}
+        <div class="task-box">
+            <strong>{{ task.name }}</strong><br>
+            <span>Hayvan Sayısı: {{ task.animal_count }}</span><br>
+            <span>Görev Bitiş Süresi: {{ task.end_time|date:'d F, H:i' }}</span><br>
+            <span>Durum: {{ task.status }}</span><br>
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="task_id" value="{{ task.id }}">
+                <button type="submit" class="btn btn-complete">Tamamlandı</button>
+            </form>
+        </div>
+        {% empty %}
+        <p>Henüz alınan görev yok.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %} 

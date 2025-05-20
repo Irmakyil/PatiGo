@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="hero-section">
+    <h1>Görev Noktaları Haritası</h1>
+    <p>Kampüs hayvanları için sürdürülebilir bir beslenme ve takip sistemi</p>
+</div>
+
+<div class="map-section">
+    <div id="map" style="height: 450px; width: 100%; max-width: 900px; margin: 2rem auto; border-radius: 18px; box-shadow: 0 2px 8px #0001;"></div>
+</div>
+<!-- Leaflet.js CDN -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var map = L.map('map').setView([40.8262, 29.9192], 16); // Kocaeli Üniversitesi koordinatları
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap'
+        }).addTo(map);
+        // Örnek beslenme noktaları
+        var points = [
+            {lat: 40.8268, lng: 29.9185, label: 'Yemekhane Arkası'},
+            {lat: 40.8257, lng: 29.9201, label: 'Mühendislik Fakültesi Önü'},
+            {lat: 40.8272, lng: 29.9178, label: 'Kütüphane Arkası Çimlik Alan'}
+        ];
+        points.forEach(function(point) {
+            L.marker([point.lat, point.lng]).addTo(map)
+                .bindPopup(point.label);
+        });
+    });
+</script>
+
+{% if user.is_authenticated %}
+<div class="tasks-list-section">
+    <h2>Aktif Yemek Kaynakları</h2>
+    {% for food in foods %}
+        <div class="food-box">
+            <b>Konum:</b> {{ food.location }}<br>
+            <b>Miktar:</b> {{ food.amount }}<br>
+            <b>Bildirilen Zaman:</b> {{ food.reported_at|date:'d.m.Y, H:i' }}<br>
+            {% if food.description %}<b>Açıklama:</b> {{ food.description }}<br>{% endif %}
+            {% if food.photo %}<img src="{{ food.photo.url }}" class="food-photo">{% endif %}
+            {% if user.userprofile.user_type == 'gonullu' %}
+                <form method="post" style="margin-top:0.7rem;">
+                    {% csrf_token %}
+                    <input type="hidden" name="food_id" value="{{ food.id }}">
+                    <button type="submit" class="btn btn-complete">Teslim Alındı</button>
+                </form>
+            {% endif %}
+        </div>
+    {% empty %}
+        <p>Henüz yemek kaynağı bildirimi yok.</p>
+    {% endfor %}
+</div>
+{% endif %}
+{% endblock %} 

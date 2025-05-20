@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="auth-section">
+    <div class="auth-box">
+        <h1>Kayıt Ol</h1>
+        {% if messages %}
+            <ul class="form-messages">
+                {% for message in messages %}
+                    <li class="{{ message.tags }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+        <form method="post" action="">
+            {% csrf_token %}
+            <label for="username">Kullanıcı Adı:</label>
+            <input type="text" id="username" name="username" placeholder="Kullanıcı Adı" required>
+            <label for="email">E-Posta Adresi:</label>
+            <input type="email" id="email" name="email" placeholder="example@example.com" required>
+            <label for="password1">Şifre:</label>
+            <input type="password" id="password1" name="password1" placeholder="Şifre" required>
+            <div class="password-info">
+                Şifreniz en <b>az 8 karakter</b> olmalı, <b>1 büyük harf</b>, <b>1 küçük harf</b> ve <b>rakam</b> içermelidir.
+            </div>
+            <label for="password2">Şifre (Tekrar):</label>
+            <input type="password" id="password2" name="password2" placeholder="Şifre (Tekrar)" required>
+            <label>Kullanıcı Tipi:</label>
+            <div class="user-type-group">
+                <input type="radio" id="yetkili" name="user_type" value="yetkili" required>
+                <label for="yetkili" class="user-type-btn">Yetkili</label>
+                <input type="radio" id="gonullu" name="user_type" value="gonullu" required>
+                <label for="gonullu" class="user-type-btn">Gönüllü</label>
+            </div>
+            <button type="submit" class="btn btn-main" style="width:100%;margin-top:1.2rem;">Kayıt Ol</button>
+        </form>
+        <div class="auth-link">
+            Zaten hesabınız var mı? <a href="/giris">Giriş Yap</a>
+        </div>
+    </div>
+</div>
+{% endblock %} 

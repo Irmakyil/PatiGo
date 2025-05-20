@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="volunteer-section">
+    <h1>Gönüllü Programı</h1>
+    <div class="volunteer-top">
+        <div class="volunteer-how">
+            <img src="{% static 'images/gonullu_el.png' %}" alt="Gönüllü Olun" class="volunteer-image">
+            <h2>Nasıl Gönüllü Olunur?</h2>
+            <ol>
+                <li>Hesap oluşturun ve gönüllü formunu doldurun</li>
+                <li>Size uygun bir beslenme noktası seçin</li>
+                <li>Takvimden uygun günleri belirleyin</li>
+                <li>Görevlerinizi tamamlayın ve raporlayın</li>
+                <li>Rozetler kazanın ve katkınızı arttırın</li>
+            </ol>
+        </div>
+        <div class="volunteer-badges">
+            <h2>Gönüllü Rozetleri</h2>
+            <div class="badges-grid">
+                <div class="badge-box"><img src="{% static 'images/pati_koruyucu.png' %}" alt="Beslenme Takibi"
+                        class="feature-img"><br>Pati Koruyucu</div>
+                <div class="badge-box"><img src="{% static 'images/mama_dagiticisi.png' %}" alt="Beslenme Takibi"
+                        class="feature-img"><br>Mama Dağıtıcısı</div>
+                <div class="badge-box"><img src="{% static 'images/su_kahramani.png' %}" alt="Beslenme Takibi"
+                        class="feature-img"><br>Su Kahramanı</div>
+                <div class="badge-box"><img src="{% static 'images/temizlik_ustasi.png' %}" alt="Beslenme Takibi"
+                        class="feature-img"><br>Temizlik Ustası</div>
+            </div>
+        </div>
+    </div>
+    <div class="calendar-section">
+        <h3 id="calendar-title"></h3>
+        <div class="calendar-nav">
+            <button id="prev-month">&lt;</button>
+            <button id="next-month">&gt;</button>
+        </div>
+        <table id="calendar"></table>
+        <div id="task-tooltip"
+            style="display:none;position:absolute;z-index:2000;background:#194a37;color:#fff;padding:1rem 1.3rem;border-radius:10px;box-shadow:0 2px 8px #0003;font-size:1rem;pointer-events:none;max-width:320px;">
+        </div>
+    </div>
+</div>
+<script>
+    // Basit, güncel ve gezinilebilir takvim
+    const calendarTitle = document.getElementById('calendar-title');
+    const calendar = document.getElementById('calendar');
+    const prevBtn = document.getElementById('prev-month');
+    const nextBtn = document.getElementById('next-month');
+    let today = new Date();
+    let currentMonth = today.getMonth();
+    let currentYear = today.getFullYear();
+    const monthNames = ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran', 'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'];
+    // Tüm görevleri JS'e aktar
+    const allTasks = [
+        {% for task in all_tasks %}
+    {
+        name: `{{ task.name|escapejs }}`,
+            end_time: `{{ task.end_time|date:'Y-m-d' }}`,
+                description: `{{ task.description|escapejs }}`,
+                    status: `{{ task.status|escapejs }}`
+    },
+    {% endfor %}
+];
+    function renderCalendar(month, year) {
+        calendarTitle.textContent = `${monthNames[month]} ${year}`;
+        let firstDay = new Date(year, month, 1).getDay();
+        firstDay = (firstDay === 0) ? 6 : firstDay - 1; // Pazartesi başlasın
+        let daysInMonth = new Date(year, month + 1, 0).getDate();
+        let html = '<tr>';
+        ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'].forEach(d => html += `<th>${d}</th>`);
+        html += '</tr><tr>';
+        for (let i = 0; i < firstDay; i++) html += '<td></td>';
+        for (let day = 1; day <= daysInMonth; day++) {
+            if ((firstDay + day - 1) % 7 === 0 && day !== 1) html += '</tr><tr>';
+            let isToday = (day === today.getDate() && month === today.getMonth() && year === today.getFullYear());
+            html += `<td class="${isToday ? 'today' : ''}" data-day="${day}">${day}</td>`;
+        }
+        html += '</tr>';
+        calendar.innerHTML = html;
+        // Günlere hover ile görev gösterme
+        const tooltip = document.getElementById('task-tooltip');
+        Array.from(calendar.querySelectorAll('td[data-day]')).forEach(td => {
+            td.onmouseenter = function (e) {
+                const day = td.getAttribute('data-day').padStart(2, '0');
+                const dateStr = `${year}-${(month + 1).toString().padStart(2, '0')}-${day}`;
+                const tasks = allTasks.filter(t => t.end_time === dateStr);
+                let html = '';
+                if (tasks.length === 0) {
+                    html = '<b>O gün için görev yok.</b>';
+                } else {
+                    html = '<b>O Günün Görevleri:</b><ul style="margin:0;padding-left:1.2em;">';
+                    tasks.forEach(t => {
+                        html += `<li><b>${t.name}</b><br>Açıklama: ${t.description}<br>Durum: ${t.status}</li>`;
+                    });
+                    html += '</ul>';
+                }
+                tooltip.innerHTML = html;
+                tooltip.style.display = 'block';
+                const rect = td.getBoundingClientRect();
+                tooltip.style.top = (window.scrollY + rect.bottom + 6) + 'px';
+                tooltip.style.left = (window.scrollX + rect.left + rect.width / 2 - tooltip.offsetWidth / 2) + 'px';
+            };
+            td.onmouseleave = function () {
+                tooltip.style.display = 'none';
+            };
+        });
+    }
+    renderCalendar(currentMonth, currentYear);
+    prevBtn.onclick = () => {
+        currentMonth--;
+        if (currentMonth < 0) { currentMonth = 11; currentYear--; }
+        renderCalendar(currentMonth, currentYear);
+    };
+    nextBtn.onclick = () => {
+        currentMonth++;
+        if (currentMonth > 11) { currentMonth = 0; currentYear++; }
+        renderCalendar(currentMonth, currentYear);
+    };
+</script>
+{% endblock %}

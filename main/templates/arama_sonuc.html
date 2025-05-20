@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="panel-section">
+    <h1>Arama Sonuçları: "{{ query }}"</h1>
+    {% if anasayfa_bulundu %}
+        <div class="task-list-box" style="background:#e0f7fa;color:#00796b;font-weight:600;">
+            Aradığınız kelime anasayfada bulunuyor.
+        </div>
+    {% endif %}
+    <h2>Görevler</h2>
+    {% for task in task_results %}
+        <div class="task-list-box">
+            <b>{{ task.name }}</b> - {{ task.status }}
+        </div>
+    {% empty %}
+        <div>Sonuç yok.</div>
+    {% endfor %}
+    <h2>Yemek Kaynakları</h2>
+    {% for food in food_results %}
+        <div class="food-box">
+            <b>Konum:</b> {{ food.location }}<br>
+            <b>Miktar:</b> {{ food.amount }}<br>
+            <b>Açıklama:</b> {{ food.description }}
+        </div>
+    {% empty %}
+        <div>Sonuç yok.</div>
+    {% endfor %}
+</div>
+{% endblock %} 
