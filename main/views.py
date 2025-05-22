@@ -1,26 +1,43 @@
 from django.shortcuts import render
 from django.contrib.auth.models import User
-from .models import UserProfile, Task
+from .models import UserProfile, Task, FoodSource
 from django.shortcuts import redirect
 from django.contrib import messages
 import re
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
-from datetime import datetime
-from .models import FoodSource
+import datetime
+
+from django.db.models import Sum
 from django.db.models import Q
-from django.core.mail import send_mail
-from django.conf import settings
-import random
-import string
-from django.contrib.auth.forms import PasswordChangeForm
-from django.contrib.auth import update_session_auth_hash
+
 
 # Create your views here.
 
 def home(request):
-    return render(request, 'home.html')
+    
+    active_feeding_points = FoodSource.objects.filter(status='bekliyor').count()
+
+    
+    volunteers_count = UserProfile.objects.filter(user_type='gonullu').count()
+
+    
+    food_sources_count = FoodSource.objects.count()
+
+   
+    one_week_ago = timezone.now() - datetime.timedelta(days=7)
+    weekly_food_count = FoodSource.objects.filter(reported_at__gte=one_week_ago).count()
+
+    context = {
+        'active_feeding_points': active_feeding_points,
+        'volunteers_count': volunteers_count,
+        'food_sources_count': food_sources_count,
+        'weekly_food_count': weekly_food_count,
+    }
+    return render(request, 'home.html', context)
+
+
 
 def gorev_noktalari(request):
     from .models import FoodSource
@@ -273,51 +290,3 @@ def arama(request):
         'food_results': food_results,
         'anasayfa_bulundu': anasayfa_bulundu,
     })
-
-def sifremi_unuttum(request):
-    if request.method == 'POST':
-        email = request.POST.get('email')
-        try:
-            user = User.objects.get(email=email)
-            # Geçici şifre oluştur
-            temp_password = ''.join(random.choices(string.ascii_letters + string.digits, k=8))
-            user.set_password(temp_password)
-            user.save()
-            
-            try:
-                # E-posta gönder
-                subject = 'Şifre Sıfırlama - PatiGo'
-                message = f'Sayın {user.username},\n\nGeçici şifreniz: {temp_password}\n\nGüvenliğiniz için lütfen giriş yaptıktan sonra şifrenizi değiştirin.'
-                send_mail(
-                    subject=subject,
-                    message=message,
-                    from_email=settings.DEFAULT_FROM_EMAIL,
-                    recipient_list=[email],
-                    fail_silently=False,
-                )
-                messages.success(request, 'Geçici şifreniz e-posta adresinize gönderildi.')
-                return redirect('giris')
-            except Exception as e:
-                # E-posta gönderimi başarısız olursa şifreyi geri al
-                user.set_password(user.password)
-                user.save()
-                messages.error(request, 'E-posta gönderilirken bir hata oluştu. Lütfen daha sonra tekrar deneyin.')
-                return render(request, 'sifremi_unuttum.html')
-        except User.DoesNotExist:
-            messages.error(request, 'Bu e-posta adresi ile kayıtlı bir kullanıcı bulunamadı.')
-        except Exception as e:
-            messages.error(request, 'Bir hata oluştu. Lütfen daha sonra tekrar deneyin.')
-    return render(request, 'sifremi_unuttum.html')
-
-@login_required
-def sifre_degistir(request):
-    if request.method == 'POST':
-        form = PasswordChangeForm(user=request.user, data=request.POST)
-        if form.is_valid():
-            user = form.save()
-            return redirect('giris')  
-    else:
-        form = PasswordChangeForm(user=request.user)
-  
-    return render(request, 'sifre_degistir.html', {'form': form})
-    messages.success(request, 'Şifreniz başarı ile değiştirildi. Tekrar giriş yapınız.')
