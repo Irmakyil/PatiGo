@@ -14,4 +14,5 @@ urlpatterns = [
     path('gorev-ekle', views.gorev_ekle, name='gorev_ekle'),
     path('yemek-kaynagi-bildir', views.yemek_kaynagi_bildir, name='yemek_kaynagi_bildir'),
     path('arama', views.arama, name='arama'),
+    path('sifremi_unuttum', views.sifremi_unuttum, name='sifremi_unuttum'),
 ] 
