@@ -1,12 +1,16 @@
 from django.db import models
 from django.contrib.auth.models import User
-
+from geopy.exc import GeocoderUnavailable, GeocoderServiceError
+import time
+from django.contrib.auth.models import User
+from geopy.geocoders import Nominatim
 # Create your models here.
 
 class UserProfile(models.Model):
     USER_TYPES = (
         ('gonullu', 'Gönüllü'),
         ('yetkili', 'Yetkili'),
+        
     )
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     user_type = models.CharField(max_length=10, choices=USER_TYPES)
@@ -50,3 +54,20 @@ class FoodSource(models.Model):
 
     def __str__(self):
         return f"{self.location} - {self.amount}"
+    
+    def save(self, *args, **kwargs):
+        # Eğer latitude veya longitude boşsa, geocode yap
+        if (self.latitude is None or self.longitude is None) and self.location:
+            try:
+                geolocator = Nominatim(user_agent="patigo_app")
+                # API hızı sınırlaması olabilir; istekler arası ufak bir bekleme koyuyoruz
+                time.sleep(1)
+                geo = geolocator.geocode(self.location + ", Kocaeli Türkiye")
+                if geo:
+                    self.latitude = geo.latitude
+                    self.longitude = geo.longitude
+            except (GeocoderUnavailable, GeocoderServiceError):
+                # Geocoding sırasında hata olursa sadece kaydet, lat/lng boş kalacak
+                pass
+
+        super().save(*args, **kwargs)

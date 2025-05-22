@@ -7,6 +7,10 @@
     {% load static %}
     <link rel="icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">  
     <link rel="stylesheet" href="/static/main.css">
+    <link rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-sA+e2EZZE5jghYJE3XVuywFw6pw7a732GZKpQaP0hC8="
+        crossorigin=""/>
 </head>
 <body>
     <nav class="navbar">
@@ -72,5 +76,9 @@
             © 2025 PatiGo. Tüm hakları saklıdır.
         </div>
     </footer>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+          integrity="sha256-o9N1j6K35u9g1St9NZl4RZY6Z1HaK4Cskv8AjFOy54M="
+          crossorigin=""></script>
 </body>
 </html>

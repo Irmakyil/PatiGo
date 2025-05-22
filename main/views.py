@@ -1,7 +1,7 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect, get_object_or_404
+from django.core.serializers.json import DjangoJSONEncoder
 from django.contrib.auth.models import User
 from .models import UserProfile, Task, FoodSource
-from django.shortcuts import redirect
 from django.contrib import messages
 import re
 from django.contrib.auth import authenticate, login, logout
@@ -14,9 +14,13 @@ import random
 import string
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
-
+import json
 from django.db.models import Sum
 from django.db.models import Q
+from geopy.geocoders import Nominatim
+from geopy.exc import GeocoderUnavailable, GeocoderServiceError
+from django.shortcuts import render, redirect
+import time
 
 
 # Create your views here.
@@ -24,11 +28,7 @@ from django.db.models import Q
 def home(request):
     
     active_feeding_points = FoodSource.objects.filter(status='bekliyor').count()
-
-    
     volunteers_count = UserProfile.objects.filter(user_type='gonullu').count()
-
-    
     food_sources_count = FoodSource.objects.count()
 
    
@@ -45,23 +45,36 @@ def home(request):
 
 
 
+
 def gorev_noktalari(request):
-    from .models import FoodSource
-    foods = []
-    if request.user.is_authenticated:
-        foods = FoodSource.objects.filter(status='bekliyor').order_by('-reported_at')[:10]
-    if request.method == 'POST' and request.user.is_authenticated:
-        # Gönüllü teslim alma işlemi
-        if hasattr(request.user, 'userprofile') and request.user.userprofile.user_type == 'gonullu':
-            food_id = request.POST.get('food_id')
-            try:
-                food = FoodSource.objects.get(id=food_id)
-                food.status = 'teslim'
-                food.save()
-            except FoodSource.DoesNotExist:
-                pass
-        return redirect('gorev_noktalari')
-    return render(request, 'gorev_noktalari.html', {'foods': foods})
+    if request.method == 'POST':
+        food_id = request.POST.get('food_id')
+        food = FoodSource.objects.filter(id=food_id, status='bekliyor').first()
+        if food:
+            food.status = 'teslim'
+            food.save()
+        return redirect('gorev_noktalari')  # map.html'e yönlendiren url ismi neyse onu kullan
+
+    foods = FoodSource.objects.all().order_by('-reported_at')
+    foods_json = json.dumps([
+        {
+            'id': food.id,
+            'lat': food.latitude,
+            'lng': food.longitude,
+            'location': food.location,
+            'amount': food.amount,
+            'description': food.description,
+            'photo_url': food.photo.url if food.photo else None,
+            'reported_at': food.reported_at.strftime('%d.%m.%Y, %H:%M')
+        }
+        for food in foods if food.latitude and food.longitude
+    ])
+
+    return render(request, 'gorev_noktalari.html', {
+        'foods': foods,
+        'foods_json': foods_json
+    })
+
 
 def gonullu_ol(request):
     from .models import Task
@@ -286,27 +299,53 @@ def gorev_ekle(request):
 
 @login_required
 def yemek_kaynagi_bildir(request):
+    # Sadece “yetkili” kullanıcıların erişebileceğini varsayıyoruz:
     if not hasattr(request.user, 'userprofile') or request.user.userprofile.user_type != 'yetkili':
         return redirect('home')
+
     if request.method == 'POST':
-        location = request.POST.get('location')
-        amount = request.POST.get('amount')
+        location    = request.POST.get('location')    # Adres metni
+        amount      = request.POST.get('amount')
         description = request.POST.get('description')
-        photo = request.FILES.get('photo')
+        photo       = request.FILES.get('photo')
+
+        # Zorunlu alan kontrolü
         if not (location and amount):
-            messages.error(request, 'Konum ve miktar zorunlu.')
-        else:
-            FoodSource.objects.create(
-                location=location,
-                amount=amount,
-                description=description,
-                photo=photo,
-                reported_by=request.user
-            )
-            messages.success(request, 'Yemek kaynağı bildirildi!')
-            return redirect('yemek_kaynagi_bildir')
-    foods = FoodSource.objects.order_by('-reported_at')[:10]
-    return render(request, 'yemek_kaynagi_bildir.html', {'foods': foods})
+            return render(request, 'yemek_kaynagi_bildir.html', {
+                'error': 'Konum ve miktar alanları zorunludur.'
+            })
+
+        # 1. Varsayılan lat/lng değerleri
+        latitude = None
+        longitude = None
+
+        # 2. Geocoding: Nominatim ile adresi koordinata çevir
+        try:
+            geolocator = Nominatim(user_agent="patigo_app")
+            time.sleep(1)  # Nominatim’in aşırı istek engellemesini önlemek için ufak bekleme
+            geo = geolocator.geocode(f"{location}, Kocaeli, Türkiye")
+            if geo:
+                latitude = geo.latitude
+                longitude = geo.longitude
+        except (GeocoderUnavailable, GeocoderServiceError):
+            # Coğrafi kodlama başarısız olursa, lat/lng None kalacak
+            pass
+
+        # 3. FoodSource kaydını oluştururken lat/lng değerlerini de atıyoruz
+        FoodSource.objects.create(
+            location=location,
+            amount=amount,
+            description=description,
+            photo=photo,
+            reported_by=request.user,
+            latitude=latitude,
+            longitude=longitude
+        )
+
+        return redirect('gorev_noktalari')  # Kayıttan sonra harita sayfasına döner
+
+    # GET isteği ise formu göster
+    return render(request, 'yemek_kaynagi_bildir.html')
 
 def arama(request):
     from django.db.models import Q
@@ -344,3 +383,7 @@ def arama(request):
         'food_results': food_results,
         'anasayfa_bulundu': anasayfa_bulundu,
     })
+    
+def food_detail(request, pk):
+    food = get_object_or_404(FoodSource, pk=pk)
+    return render(request, 'food_detail.html', {'food': food})

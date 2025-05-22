@@ -16,4 +16,5 @@ urlpatterns = [
     path('arama', views.arama, name='arama'),
     path('sifremi_unuttum', views.sifremi_unuttum, name='sifremi_unuttum'),
     path('sifre_degistir', views.sifre_degistir, name='sifre_degistir'),
+    path('food/<int:pk>/', views.food_detail, name='food_detail'),
 ] 
