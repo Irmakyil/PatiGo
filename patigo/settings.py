@@ -129,4 +129,6 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'patidostugonullu1@gmail.com'
 EMAIL_HOST_PASSWORD = 'edyy jzod mcou shhp'
+DEFAULT_FROM_EMAIL = 'patidostugonullu1@gmail.com'
+EMAIL_TIMEOUT = 30  # Timeout süresini 30 saniye olarak ayarlıyoruz
 

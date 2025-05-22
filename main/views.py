@@ -8,6 +8,12 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 import datetime
+from django.core.mail import send_mail
+from django.conf import settings
+import random
+import string
+from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth import update_session_auth_hash
 
 from django.db.models import Sum
 from django.db.models import Q
@@ -61,6 +67,54 @@ def gonullu_ol(request):
     from .models import Task
     all_tasks = Task.objects.all()
     return render(request, 'gonullu_ol.html', {'all_tasks': all_tasks})
+
+def sifremi_unuttum(request):
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        try:
+            user = User.objects.get(email=email)
+            # Geçici şifre oluştur
+            temp_password = ''.join(random.choices(string.ascii_letters + string.digits, k=8))
+            user.set_password(temp_password)
+            user.save()
+            
+            try:
+                # E-posta gönder
+                subject = 'Şifre Sıfırlama - PatiGo'
+                message = f'Sayın {user.username},\n\nGeçici şifreniz: {temp_password}\n\nGüvenliğiniz için lütfen giriş yaptıktan sonra şifrenizi değiştirin.'
+                send_mail(
+                    subject=subject,
+                    message=message,
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    recipient_list=[email],
+                    fail_silently=False,
+                )
+                messages.success(request, 'Geçici şifreniz e-posta adresinize gönderildi.')
+                return redirect('giris')
+            except Exception as e:
+                # E-posta gönderimi başarısız olursa şifreyi geri al
+                user.set_password(user.password)
+                user.save()
+                messages.error(request, 'E-posta gönderilirken bir hata oluştu. Lütfen daha sonra tekrar deneyin.')
+                return render(request, 'sifremi_unuttum.html')
+        except User.DoesNotExist:
+            messages.error(request, 'Bu e-posta adresi ile kayıtlı bir kullanıcı bulunamadı.')
+        except Exception as e:
+            messages.error(request, 'Bir hata oluştu. Lütfen daha sonra tekrar deneyin.')
+    return render(request, 'sifremi_unuttum.html')
+    return render(request, 'sifremi_unuttum.html')
+@login_required
+def sifre_degistir(request):
+    if request.method == 'POST':
+        form = PasswordChangeForm(user=request.user, data=request.POST)
+        if form.is_valid():
+            user = form.save()
+            return redirect('giris')  
+    else:
+        form = PasswordChangeForm(user=request.user)
+  
+    return render(request, 'sifre_degistir.html', {'form': form})
+    messages.success(request, 'Şifreniz başarı ile değiştirildi. Tekrar giriş yapınız.')
 
 def giris(request):
     if request.method == 'POST':
