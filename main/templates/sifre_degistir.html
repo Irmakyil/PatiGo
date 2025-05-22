@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="auth-section">
+    <div class="auth-box">
+        <h1>Şifre Değiştir</h1>
+        {% if messages %}
+            <ul class="form-messages">
+                {% for message in messages %}
+                    <li class="{{ message.tags }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+        <form method="post" action="">
+            {% csrf_token %}
+            <label for="password1">Eski Şifre:</label>
+            <input type="password" id="old_password" name="old_password" placeholder="Eski Şifre" required>
+            <label for="password1">Şifre:</label>
+            <input type="password" id="new_password1" name="new_password1" placeholder="Şifre" required>
+            <label for="password2">Şifre (Tekrar):</label>
+            <input type="password" id="new_password2" name="new_password2" placeholder="Şifre (Tekrar)" required>
+            <button type="submit" class="btn btn-main" style="width:100%;margin-top:1.2rem;">Şifreyi Güncelle</button>
+        </form>
+    </div>
+</div>
+{% endblock %} 

@@ -9,6 +9,10 @@
             <p><b>E-posta:</b> {{ user.email }}</p>
             <p><b>Kullanıcı Tipi:</b> {{ profile.get_user_type_display }}</p>
             <p><b>Üyelik Tarihi:</b> {{ profile.join_date|date:'d-m-Y' }}</p>
+            
+            <div class="btn btn-register" style="margin-top: 1.5rem; text-align: center;">
+            <a href="/sifre_degistir" class="nav-link">Şifre Değiştir</a>
+            </div>
         </div>
         {% if profile.user_type == 'gonullu' %}
         <div class="profile-badges">

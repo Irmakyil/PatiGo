@@ -14,6 +14,8 @@ from django.core.mail import send_mail
 from django.conf import settings
 import random
 import string
+from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth import update_session_auth_hash
 
 # Create your views here.
 
@@ -306,3 +308,16 @@ def sifremi_unuttum(request):
         except Exception as e:
             messages.error(request, 'Bir hata oluştu. Lütfen daha sonra tekrar deneyin.')
     return render(request, 'sifremi_unuttum.html')
+
+@login_required
+def sifre_degistir(request):
+    if request.method == 'POST':
+        form = PasswordChangeForm(user=request.user, data=request.POST)
+        if form.is_valid():
+            user = form.save()
+            return redirect('giris')  
+    else:
+        form = PasswordChangeForm(user=request.user)
+  
+    return render(request, 'sifre_degistir.html', {'form': form})
+    messages.success(request, 'Şifreniz başarı ile değiştirildi. Tekrar giriş yapınız.')
