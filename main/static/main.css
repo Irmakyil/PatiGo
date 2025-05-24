@@ -623,7 +623,9 @@ body {
     padding-right: 0.5rem;
 }
 .user-dropdown {
-    display: none;
+    display: block; /* block olarak bırakıyoruz, böylece alan hep var */
+    visibility: hidden; /* görünmez */
+    opacity: 0; /* şeffaf */
     position: absolute;
     right: 0;
     top: 2.2rem;
@@ -633,6 +635,8 @@ body {
     min-width: 170px;
     z-index: 10;
     padding: 0.7rem 0.5rem;
+
+    transition: opacity 0.3s ease, visibility 0.3s ease;
 }
 .user-dropdown a {
     display: block;
@@ -648,7 +652,8 @@ body {
     color: #222;
 }
 .user-menu:hover .user-dropdown {
-    display: block;
+    visibility: visible; /* görünür */
+    opacity: 1; /* opak */
 }
 .profile-section {
     max-width: 900px;

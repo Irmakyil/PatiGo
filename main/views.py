@@ -26,7 +26,8 @@ from main.models import Badge, UserBadge
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from .models import EmailVerification
-from datetime import datetime
+from django.utils import timezone
+
 
 # Create your views here.
 
@@ -401,38 +402,34 @@ def yemek_kaynagi_bildir(request):
 def arama(request):
     from django.db.models import Q
     from .models import Task, FoodSource
+    
     query = request.GET.get('q', '')
-    task_results = []
-    food_results = []
-    anasayfa_bulundu = False
-    # Anasayfa statik metinleri
-    ANASAYFA_METINLERI = [
-        "Kampüs Hayvanları İçin Dijital Destek Platformu",
-        "Pati Dostu, kampüsteki sokak hayvanlarına destek olmak için oluşturulmuş dijital bir platformdur.",
-        "Beslenme Noktaları Haritası",
-        "Yemek Artığı Planlaması",
-        "Gönüllü Takip Sistemi",
-        "Beslenme Takibi",
-        "Beslenme Noktaları Rozetleri",
-        "Acil Durum Bildirimleri",
-        # ... diğer önemli anasayfa metinleri ...
-    ]
+    
+    # Başlangıçta tüm sonuçları al
+    task_results = Task.objects.all()
+    food_results = FoodSource.objects.all()
+    
+    # Genel arama sorgusu varsa
     if query:
-        task_results = Task.objects.filter(
-            Q(name__icontains=query) | Q(status__icontains=query)
+        task_results = task_results.filter(
+            Q(name__icontains=query) |
+            Q(description__icontains=query) |
+            Q(status__icontains=query)
         )
-        food_results = FoodSource.objects.filter(
-            Q(location__icontains=query) | Q(amount__icontains=query) | Q(description__icontains=query)
+        food_results = food_results.filter(
+            Q(location__icontains=query) |
+            Q(amount__icontains=query) |
+            Q(description__icontains=query)
         )
-        for metin in ANASAYFA_METINLERI:
-            if query.lower() in metin.lower():
-                anasayfa_bulundu = True
-                break
+    
+    # Sonuçları tarihe göre sırala
+    task_results = task_results.order_by('-end_time')
+    food_results = food_results.order_by('-reported_at')
+    
     return render(request, 'arama_sonuc.html', {
         'query': query,
         'task_results': task_results,
         'food_results': food_results,
-        'anasayfa_bulundu': anasayfa_bulundu,
     })
     
 def food_detail(request, pk):
