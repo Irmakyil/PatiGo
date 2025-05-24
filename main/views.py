@@ -7,7 +7,6 @@ import re
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
-import datetime
 from django.core.mail import send_mail
 from django.conf import settings
 import random
@@ -21,13 +20,16 @@ from geopy.geocoders import Nominatim
 from geopy.exc import GeocoderUnavailable, GeocoderServiceError
 from django.shortcuts import render, redirect
 import time
-from django.utils import timezone
 from main.models import Badge, UserBadge
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from .models import EmailVerification
 from datetime import datetime
 from datetime import datetime, timedelta
+import csv
+from django.http import HttpResponse
+from .models import Task
+
 
 # Create your views here.
 
@@ -487,27 +489,29 @@ def assign_badge_if_eligible(user, task):
     if not UserBadge.objects.filter(user=user, badge=badge_obj).exists():
         UserBadge.objects.create(user=user, badge=badge_obj)
         
-import csv
-from django.http import HttpResponse
-from .models import Task
 
+@login_required
 def export_tasks_csv(request):
     # CSV response oluşturuluyor
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="gorevler.csv"'
+    response['Content-Disposition'] = f'attachment; filename="gorevler_{request.user.username}.csv"'
 
     writer = csv.writer(response)
     
     # Başlık satırı
-    writer.writerow(['Görev Başlığı', 'Durum', 'Hayvan Sayısı', 'Bitiş Süresi'])
+    writer.writerow(['Görev Başlığı', 'Durum', 'Hayvan Sayısı', 'Bitiş Süresi', 'Tamamlandı mı?'])
 
+    # Sadece giriş yapmış kullanıcının görevlerini al
+    tasks = Task.objects.filter(assigned_to=request.user).order_by('-end_time')
+    
     # Veriler
-    for task in Task.objects.all():
+    for task in tasks:
         writer.writerow([
             task.name,
             task.status,
             task.animal_count,
-            task.end_time.strftime('%d.%m.%Y %H:%M')
+            task.end_time.strftime('%d.%m.%Y %H:%M'),
+            'Evet' if task.is_completed else 'Hayır'
         ])
 
     return response
