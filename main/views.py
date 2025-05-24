@@ -27,6 +27,8 @@ from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from .models import EmailVerification
 from datetime import datetime
+from datetime import datetime, timedelta
+
 
 # Create your views here.
 
@@ -37,7 +39,7 @@ def home(request):
     food_sources_count = FoodSource.objects.count()
 
    
-    one_week_ago = timezone.now() - datetime.timedelta(days=7)
+    one_week_ago = datetime.now() - timedelta(days=7)
     weekly_food_count = FoodSource.objects.filter(reported_at__gte=one_week_ago).count()
 
     context = {
