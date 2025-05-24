@@ -27,6 +27,7 @@ from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from .models import EmailVerification
 from datetime import datetime
+from datetime import datetime, timedelta
 
 # Create your views here.
 
