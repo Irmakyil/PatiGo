@@ -36,13 +36,11 @@
             <button id="next-month">&gt;</button>
         </div>
         <table id="calendar"></table>
-        <div id="task-tooltip"
-            style="display:none;position:absolute;z-index:2000;background:#194a37;color:#fff;padding:1rem 1.3rem;border-radius:10px;box-shadow:0 2px 8px #0003;font-size:1rem;pointer-events:none;max-width:320px;">
-        </div>
+        <div id="task-tooltip" class="calendar-tooltip"></div>
     </div>
 </div>
 <script>
-    // Basit, güncel ve gezinilebilir takvim
+    
     const calendarTitle = document.getElementById('calendar-title');
     const calendar = document.getElementById('calendar');
     const prevBtn = document.getElementById('prev-month');
@@ -51,7 +49,7 @@
     let currentMonth = today.getMonth();
     let currentYear = today.getFullYear();
     const monthNames = ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran', 'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'];
-    // Tüm görevleri JS'e aktar
+    
     const allTasks = [
         {% for task in all_tasks %}
     {
@@ -65,7 +63,7 @@
     function renderCalendar(month, year) {
         calendarTitle.textContent = `${monthNames[month]} ${year}`;
         let firstDay = new Date(year, month, 1).getDay();
-        firstDay = (firstDay === 0) ? 6 : firstDay - 1; // Pazartesi başlasın
+        firstDay = (firstDay === 0) ? 6 : firstDay - 1; 
         let daysInMonth = new Date(year, month + 1, 0).getDate();
         let html = '<tr>';
         ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'].forEach(d => html += `<th>${d}</th>`);
@@ -78,7 +76,7 @@
         }
         html += '</tr>';
         calendar.innerHTML = html;
-        // Günlere hover ile görev gösterme
+        
         const tooltip = document.getElementById('task-tooltip');
         Array.from(calendar.querySelectorAll('td[data-day]')).forEach(td => {
             td.onmouseenter = function (e) {
@@ -89,7 +87,7 @@
                 if (tasks.length === 0) {
                     html = '<b>O gün için görev yok.</b>';
                 } else {
-                    html = '<b>O Günün Görevleri:</b><ul style="margin:0;padding-left:1.2em;">';
+                    html = '<b>O Günün Görevleri:</b><ul class="calendar-tooltip-list">';
                     tasks.forEach(t => {
                         html += `<li><b>${t.name}</b><br>Açıklama: ${t.description}<br>Durum: ${t.status}</li>`;
                     });

@@ -160,10 +160,10 @@ body {
     color: #444;
 }
 .feature-img {
-    width: 50px;      /* istediğiniz genişlik */
-    height: 50px;     /* istediğiniz yükseklik */
-    object-fit: contain; /* oranı koruyarak sığdırır */
-    margin-bottom: 0.5rem; /* kutu ile arası */
+    width: 50px;      
+    height: 50px;     
+    object-fit: contain;
+    margin-bottom: 0.5rem; 
     display: block;
     margin-left: auto;
     margin-right: auto;
@@ -236,7 +236,7 @@ body {
     flex: 1 1 120px;
 }
 .footer-img {
-    max-width: 200px;   /* İstediğiniz kadar büyütebilirsiniz */
+    max-width: 200px;   
     max-height: 150px;
     width: auto;
     height: auto;
@@ -623,9 +623,9 @@ body {
     padding-right: 0.5rem;
 }
 .user-dropdown {
-    display: block; /* block olarak bırakıyoruz, böylece alan hep var */
-    visibility: hidden; /* görünmez */
-    opacity: 0; /* şeffaf */
+    display: block; 
+    visibility: hidden; 
+    opacity: 0; 
     position: absolute;
     right: 0;
     top: 2.2rem;
@@ -682,20 +682,36 @@ body {
     font-size: 1.2rem;
     min-width: 260px;
 }
-.badges-list {
-    display: flex;
-    gap: 1.2rem;         /* Rozetler arası boşluk */
+.badges-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.2rem;
     margin-top: 0.7rem;
     align-items: center;
-    justify-content: flex-start; /* veya center */
+    justify-items: center;
+}
+.badge-card {
+    width: 120px;
+}
+@media (max-width: 600px) {
+    .badges-container {
+        grid-template-columns: 1fr;
+    }
+}
+.badges-list {
+    display: flex;
+    gap: 1.2rem;         
+    margin-top: 0.7rem;
+    align-items: center;
+    justify-content: flex-start; 
 }
 
 .badge-img {
-    width: 48px;         /* Küçük boyut */
+    width: 48px;         
     height: 48px;
     object-fit: contain;
-    border-radius: 50%;  /* Daire şeklinde isterseniz */
-    background: #fffbe7; /* Hafif arka plan isterseniz */
+    border-radius: 50%;  
+    background: #fffbe7; 
     box-shadow: 0 1px 4px #0001;
     padding: 0.2rem;
     display: block;
@@ -719,17 +735,24 @@ body {
     flex-wrap: wrap;
     gap: 1.5rem;
     margin-bottom: 1.2rem;
+    align-items: flex-end;
 }
 .form-group {
     flex: 1 1 200px;
     min-width: 180px;
+    max-width: 260px;
     display: flex;
     flex-direction: column;
     gap: 0.3rem;
 }
 .form-group label {
-    font-weight: 500;
+    font-weight: 600;
     color: #194a37;
+    font-size: 1.05rem;
+    margin-bottom: 0.2rem;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
 }
 .form-group input,
 .form-group select,
@@ -740,6 +763,8 @@ body {
     font-size: 1rem;
     background: #fff;
     transition: border 0.2s;
+    width: 100%;
+    box-sizing: border-box;
 }
 .form-group input:focus,
 .form-group select:focus,
@@ -774,6 +799,13 @@ body {
     .form-row {
         flex-direction: column;
         gap: 0.7rem;
+        align-items: stretch;
+    }
+    .form-group {
+        max-width: 100%;
+    }
+    .form-group label {
+        font-size: 1rem;
     }
 }
 .btn-edit {
@@ -873,4 +905,210 @@ body {
     height: auto;
     display: block;
     margin: 0 auto 1rem auto;
+}
+
+.verify-btn {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 5px;
+    display: inline-block;
+}
+
+.btn-fullwidth {
+    width: 100%;
+}
+.btn-mt-12 {
+    margin-top: 1.2rem;
+}
+.auth-link-mt-05 {
+    margin-top: 0.5rem;
+}
+
+.food-detail-container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: #fff;
+}
+.food-detail-img-wrapper {
+    margin-top: 1rem;
+}
+.food-detail-img {
+    max-width: 400px;
+    border-radius: 6px;
+    display: block;
+}
+.food-detail-btn {
+    margin-top: 1rem;
+}
+
+.calendar-tooltip {
+    display: none;
+    position: absolute;
+    z-index: 2000;
+    background: #194a37;
+    color: #fff;
+    padding: 1rem 1.3rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px #0003;
+    font-size: 1rem;
+    pointer-events: none;
+    max-width: 320px;
+}
+.calendar-tooltip-list {
+    margin: 0;
+    padding-left: 1.2em;
+}
+
+.panel-section-narrow {
+    max-width: 800px;
+    margin: 2rem auto;
+}
+.add-task-box-bordered {
+    border: 1px solid #ddd;
+    padding: 1.5rem;
+    border-radius: 8px;
+}
+.add-task-message {
+    margin-bottom: 0.5rem;
+}
+.add-task-select,
+.add-task-input,
+.add-task-textarea {
+    width: 100%;
+    padding: 0.5rem;
+}
+.form-group-fullwidth {
+    flex: 1 1 100%;
+}
+.tasks-list-section-mt {
+    margin-top: 2rem;
+}
+.add-task-list-box {
+    border: 1px solid #eee;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 6px;
+}
+.add-task-list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.add-task-list-actions {
+    margin-top: 0.7rem;
+}
+
+.map-container {
+    height: 500px;
+    width: 100%;
+    max-width: 900px;
+    margin: 2rem auto;
+    border-radius: 18px;
+}
+.tasks-list-section-wide {
+    max-width: 900px;
+    margin: 2rem auto;
+}
+.food-box-bordered {
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+.food-photo-small {
+    max-width: 200px;
+}
+.food-form-mt {
+    margin-top: 0.7rem;
+}
+
+.profile-section-narrow {
+    max-width: 800px;
+    margin: 2rem auto;
+}
+.profile-details-bordered {
+    flex: 1 1 300px;
+    border: 1px solid #e0e0e0;
+    padding: 1.5rem;
+    border-radius: 8px;
+    background: #fafafa;
+}
+.profile-badges-bordered {
+    flex: 1 1 300px;
+    border: 1px solid #e0e0e0;
+    padding: 1.5rem;
+    border-radius: 8px;
+    background: #fafafa;
+}
+.badge-card-bordered {
+    text-align: center;
+    border: 1px solid #ddd;
+    padding: 1rem;
+    border-radius: 8px;
+    width: 120px;
+    background: #fff;
+}
+.badge-img-large {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+    margin-bottom: 0.5rem;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+.badge-card-empty {
+    display: none;
+    width: 80px;
+    height: 80px;
+    background: #eee;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    margin: 0 auto 0.5rem;
+}
+.badge-card-title {
+    margin: 0.3rem 0 0;
+}
+.badge-card-date {
+    color: #555;
+    font-size: 0.85rem;
+}
+.badge-card-empty-text {
+    margin-top: 0.5rem;
+    color: #666;
+}
+.profile-export-btn {
+    margin-top: 1.5rem;
+    text-align: center;
+}
+
+.task-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.food-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.add-task-info {
+    text-align: center;
+    font-weight: bold;
+    font-size: 1.25rem;
+    margin-bottom: 1.2rem;
+    color: #222;
+}
+@media (max-width: 900px) {
+    .add-task-info {
+        font-size: 1.08rem;
+    }
 }

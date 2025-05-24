@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block content %}
-<div style="max-width:800px; margin:2rem auto; padding:1rem; border:1px solid #ddd; border-radius:8px;">
+<div class="food-detail-container">
     <h2>Beslenme Noktası Detayı</h2>
     <p><b>Konum:</b> {{ food.location }}</p>
     <p><b>Miktar:</b> {{ food.amount }}</p>
@@ -13,11 +13,11 @@
         <p><b>Açıklama:</b> {{ food.description }}</p>
     {% endif %}
     {% if food.photo %}
-        <div style="margin-top:1rem;">
-            <img src="{{ food.photo.url }}" style="max-width:400px; border-radius:6px;">
+        <div class="food-detail-img-wrapper">
+            <img src="{{ food.photo.url }}" class="food-detail-img">
         </div>
     {% endif %}
     <p><b>Koordinat:</b> ({{ food.latitude }}, {{ food.longitude }})</p>
-    <a href="{% url 'gorev_noktalari' %}" class="btn btn-primary" style="margin-top:1rem;">Geri Dön</a>
+    <a href="{% url 'gorev_noktalari' %}" class="btn btn-primary food-detail-btn">Geri Dön</a>
 </div>
 {% endblock %}

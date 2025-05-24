@@ -7,18 +7,17 @@
     <p>Kampüs hayvanları için sürdürülebilir bir beslenme ve takip sistemi</p>
 </div>
 
-<div id="map" style="height: 500px; width: 100%; max-width: 900px; margin: 2rem auto; border-radius: 18px;"></div>
+<div id="map" class="map-container"></div>
 
 <!-- Leaflet CSS/JS -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <script>
-    window.foods = {{ foods_json|safe }};
+    // Foods verisini güvenli bir şekilde JavaScript'e aktar
+    const foods = JSON.parse('{{ foods_json|safe }}');
 
     document.addEventListener('DOMContentLoaded', function () {
-        const foods = window.foods;
-
         // 1. Haritayı başlat: KOÜ konumunu merkeze alıyoruz
         var map = L.map('map').setView([40.8262, 29.9192], 16);
 
@@ -57,9 +56,6 @@
                     .addTo(map)
                     .bindPopup('<strong>Buradasınız</strong>')
                     .openPopup();
-
-                // Haritayı kullanıcının konumuna yakınlaştır (isteğe bağlı)
-                // map.setView([userLat, userLng], 16);
             }, function(error) {
                 console.warn('Kullanıcı konumu alınamadı:', error);
             });
@@ -84,17 +80,17 @@
 </script>
 
 {% if user.is_authenticated %}
-<div class="tasks-list-section" style="max-width: 900px; margin: 2rem auto;">
+<div class="tasks-list-section tasks-list-section-wide">
     <h2>Aktif Yemek Kaynakları</h2>
     {% for food in foods %}
-        <div class="food-box" style="border: 1px solid #ccc; border-radius: 12px; padding: 1rem; margin-bottom: 1rem;">
+        <div class="food-box food-box-bordered">
             <b>Konum:</b> {{ food.location }}<br>
             <b>Miktar:</b> {{ food.amount }}<br>
             <b>Bildirilen Zaman:</b> {{ food.reported_at|date:'d.m.Y, H:i' }}<br>
             {% if food.description %}<b>Açıklama:</b> {{ food.description }}<br>{% endif %}
-            {% if food.photo %}<img src="{{ food.photo.url }}" class="food-photo" style="max-width:200px;"><br>{% endif %}
+            {% if food.photo %}<img src="{{ food.photo.url }}" class="food-photo food-photo-small"><br>{% endif %}
             {% if user.userprofile.user_type == 'gonullu' and food.status == 'bekliyor' %}
-                <form method="post" style="margin-top:0.7rem;">
+                <form method="post" action="{% url 'gorev_noktalari' %}" class="food-form-mt">
                     {% csrf_token %}
                     <input type="hidden" name="food_id" value="{{ food.id }}">
                     <button type="submit" class="btn btn-success">Teslim Alındı</button>

@@ -13,7 +13,7 @@
     <div class="tasks-grid">
         {% for task in tasks %}
         <div class="task-box">
-            <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div class="task-header">
                 <strong>{{ task.name }}</strong>
                 {% if task.priority == 'acil' %}
                     <span class="priority-label priority-acil">Acil</span>

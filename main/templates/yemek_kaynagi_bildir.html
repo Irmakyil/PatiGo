@@ -3,7 +3,7 @@
 <div class="panel-section">
     <h1>Yemek Kaynağı Bildir</h1>
     <div class="add-task-box">
-        <p>Kampüs dostlarımız için yemek artığı paylaş!<br>Bir tabak mama, bir hayat kurtarır.</p>
+        <div class="add-task-info">Kampüs dostlarımız için yemek artığı paylaş!<br>Bir tabak mama, bir hayat kurtarır.</div>
         {% if messages %}
             <ul class="form-messages">
                 {% for message in messages %}
@@ -11,7 +11,7 @@
                 {% endfor %}
             </ul>
         {% endif %}
-        <form method="post" enctype="multipart/form-data" action="">
+        <form method="post" enctype="multipart/form-data" action="{% url 'yemek_kaynagi_bildir' %}">
             {% csrf_token %}
             <div class="form-row">
                 <div class="form-group">
@@ -31,7 +31,7 @@
                     <input type="file" id="photo" name="photo" accept="image/*">
                 </div>
             </div>
-            <button type="submit" class="btn btn-main" style="width:100%;margin-top:1.2rem;">Bildir</button>
+            <button type="submit" class="btn btn-main btn-fullwidth btn-mt-12">Bildir</button>
         </form>
     </div>
     <div class="tasks-list-section">
@@ -39,7 +39,7 @@
         <div class="foods-grid">
         {% for food in foods %}
             <div class="food-box">
-                <div style="display:flex;justify-content:space-between;align-items:center;">
+                <div class="food-header">
                     <span><b>Konum:</b> {{ food.location }}</span>
                     <span class="food-status food-status-{{ food.status }}">{{ food.get_status_display }}</span>
                 </div>
