@@ -29,6 +29,7 @@ from datetime import datetime, timedelta
 import csv
 from django.http import HttpResponse
 from .models import Task
+from django.db import models
 
 
 # Create your views here.
@@ -492,19 +493,22 @@ def assign_badge_if_eligible(user, task):
 
 @login_required
 def export_tasks_csv(request):
-    # CSV response oluşturuluyor
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = f'attachment; filename="gorevler_{request.user.username}.csv"'
-
     writer = csv.writer(response)
-    
-    # Başlık satırı
     writer.writerow(['Görev Başlığı', 'Durum', 'Hayvan Sayısı', 'Bitiş Süresi', 'Tamamlandı mı?'])
 
-    # Sadece giriş yapmış kullanıcının görevlerini al
-    tasks = Task.objects.filter(assigned_to=request.user).order_by('-end_time')
-    
-    # Veriler
+    user_profile = request.user.userprofile
+    if user_profile.user_type == 'yetkili':
+        # created_by kendisi olan, created_by boş olan veya assigned_to kendisi olan görevleri dışa aktar
+        tasks = Task.objects.filter(
+            models.Q(created_by=request.user) |
+            models.Q(created_by__isnull=True) |
+            models.Q(assigned_to=request.user)
+        ).order_by('-end_time').distinct()
+    else:
+        tasks = Task.objects.filter(assigned_to=request.user).order_by('-end_time')
+
     for task in tasks:
         writer.writerow([
             task.name,
@@ -513,7 +517,6 @@ def export_tasks_csv(request):
             task.end_time.strftime('%d.%m.%Y %H:%M'),
             'Evet' if task.is_completed else 'Hayır'
         ])
-
     return response
 
 def send_verification_email(user):
