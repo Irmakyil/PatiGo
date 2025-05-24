@@ -21,7 +21,8 @@ from geopy.geocoders import Nominatim
 from geopy.exc import GeocoderUnavailable, GeocoderServiceError
 from django.shortcuts import render, redirect
 import time
-
+from django.utils import timezone
+from main.models import Badge, UserBadge
 
 # Create your views here.
 
@@ -183,66 +184,87 @@ def kayit(request):
 
 @login_required
 def gonullu_panel(request):
+    """
+    Gönüllü paneli: Atanmış, tamamlanmamış görevler listelenir.
+    Görev tamamlandığında rozet ataması yapılır.
+    """
+    # 1. Kullanıcı profili kontrolü
     profile = request.user.userprofile
     if profile.user_type != 'gonullu':
         return redirect('home')
-    # Görev tamamla işlemi
+
+    # 2. Kullanıcının kazandığı rozetleri de template'e iletelim
+    user_badges = UserBadge.objects.filter(user=request.user).select_related('badge')
+
     if request.method == 'POST':
         task_id = request.POST.get('task_id')
-        try:
-            task = Task.objects.get(id=task_id, assigned_to=request.user)
-            task.is_completed = True
-            task.save()
-            messages.success(request, 'Görev tamamlandı olarak işaretlendi.')
-        except Task.DoesNotExist:
-            messages.error(request, 'Görev bulunamadı.')
+        # 3. Görevi al veya hata döndür
+        task = get_object_or_404(Task, id=task_id, assigned_to=request.user, is_completed=False)
+        # 4. Görevi tamamla
+        task.is_completed = True
+        task.save()
+
+        # 5. Görev başlığına göre rozet ataması
+        assign_badge_if_eligible(request.user, task)
+
+        messages.success(request, 'Görev tamamlandı ve rozetiniz güncellendi!')
         return redirect('gonullu_panel')
-    # Kullanıcıya atanmış ve tamamlanmamış görevler
-    tasks = Task.objects.filter(assigned_to=request.user, is_completed=False)
-    return render(request, 'gonullu_panel.html', {'tasks': tasks})
+
+    # 6. GET isteğinde: halen tamamlanmamış görevleri getir
+    tasks = Task.objects.filter(assigned_to=request.user, is_completed=False).order_by('end_time')
+    context = {
+        'tasks': tasks,
+        'user_badges': user_badges,
+    }
+    return render(request, 'gonullu_panel.html', context)
+
 
 @login_required
 def gorev_al(request):
+    """
+    Gönüllünün yeni görev alabileceği sayfa.
+    Atanmamış ve tamamlanmamış görevleri listeler.
+    Seçilen görevi kullanıcıya atar.
+    """
     profile = request.user.userprofile
     if profile.user_type != 'gonullu':
         return redirect('home')
+
     if request.method == 'POST':
         task_id = request.POST.get('task_id')
-        try:
-            task = Task.objects.get(id=task_id, assigned_to__isnull=True, is_completed=False)
-            task.assigned_to = request.user
-            task.save()
-            messages.success(request, 'Görev başarıyla alındı!')
-        except Task.DoesNotExist:
-            messages.error(request, 'Görev alınamıyor veya zaten alınmış.')
+        task = get_object_or_404(Task, id=task_id, assigned_to__isnull=True, is_completed=False)
+        task.assigned_to = request.user
+        task.save()
+        messages.success(request, 'Görev başarıyla alındı!')
         return redirect('gorev_al')
-    # Atanmamış ve tamamlanmamış görevler
-    tasks = Task.objects.filter(assigned_to__isnull=True, is_completed=False)
+
+    # GET: atanmamış ve tamamlanmamış görevler
+    tasks = Task.objects.filter(assigned_to__isnull=True, is_completed=False).order_by('end_time')
     return render(request, 'gorev_al.html', {'tasks': tasks})
 
 def cikis(request):
     logout(request)
     return redirect('home')
 
-@login_required
+
+
+@login_required   #düzeltilmiş hali
 def profil(request):
+    user_badges = UserBadge.objects.filter(user=request.user).select_related('badge')
     profile = request.user.userprofile
-    # Örnek rozetler (ileride dinamik yapılabilir)
-    badges = [
-        {'icon': '🐾', 'name': 'Pati Koruyucu'},
-        {'icon': '🍚', 'name': 'Mama Dağıtıcısı'},
-        {'icon': '💧', 'name': 'Su Kahramanı'},
-        {'icon': '🧤', 'name': 'Temizlik Ustası'},
-    ]
-    return render(request, 'profil.html', {'profile': profile, 'badges': badges})
+    return render(request, 'profil.html', {'user_badges': user_badges,
+                                           'profile':profile})
 
 @login_required
 def gorev_ekle(request):
     profile = request.user.userprofile
     if profile.user_type != 'yetkili':
+        # Yalnızca yetkili kullanıcılara izin ver.
         return redirect('home')
+
     edit_task = None
-    # Silme işlemi
+
+    # --- Silme işlemi ---
     if request.GET.get('delete'):
         try:
             task = Task.objects.get(id=request.GET.get('delete'))
@@ -251,27 +273,35 @@ def gorev_ekle(request):
             return redirect('gorev_ekle')
         except Task.DoesNotExist:
             messages.error(request, 'Görev bulunamadı.')
-    # Düzenleme için mevcut görev
+            return redirect('gorev_ekle')
+
+    # --- Düzenleme için veriyi getirme ---
     if request.GET.get('edit'):
         try:
             edit_task = Task.objects.get(id=request.GET.get('edit'))
         except Task.DoesNotExist:
             edit_task = None
             messages.error(request, 'Görev bulunamadı.')
-    # Ekleme veya düzenleme işlemi
+
+    # --- POST: Ekleme veya Güncelleme ---
     if request.method == 'POST':
-        task_id = request.POST.get('task_id')
+        task_id = request.POST.get('task_id')  # düzenleme modundaysa task_id gelir
         name = request.POST.get('name')
         end_time = request.POST.get('end_time')
         priority = request.POST.get('priority')
         animal_count = request.POST.get('animal_count')
         status = request.POST.get('status')
+
+        # Tüm alanlar dolu mu diye kontrol
         if not (name and end_time and priority and animal_count and status):
             messages.error(request, 'Tüm alanları doldurmalısınız.')
         else:
             try:
-                end_time_dt = datetime.strptime(end_time, '%Y-%m-%dT%H:%M')
-                if task_id:  # Düzenleme
+                # Burada kesinlikle datetime.datetime.strptime kullanın
+                end_time_dt = datetime.datetime.strptime(end_time, '%Y-%m-%dT%H:%M')
+
+                if task_id:
+                    # Düzenleme
                     task = Task.objects.get(id=task_id)
                     task.name = name
                     task.end_time = end_time_dt
@@ -281,7 +311,8 @@ def gorev_ekle(request):
                     task.description = status
                     task.save()
                     messages.success(request, 'Görev güncellendi!')
-                else:  # Yeni görev
+                else:
+                    # Yeni görev ekleme
                     Task.objects.create(
                         name=name,
                         end_time=end_time_dt,
@@ -292,8 +323,14 @@ def gorev_ekle(request):
                     )
                     messages.success(request, 'Görev başarıyla eklendi!')
                 return redirect('gorev_ekle')
+            except ValueError:
+                # Tarih formatı hatalıysa
+                messages.error(request, 'Tarih formatı hatalı. Lütfen geçerli bir tarih seçin.')
             except Exception as e:
-                messages.error(request, 'Tarih formatı hatalı veya başka bir hata oluştu.')
+                # Diğer hatalar için genel mesaj
+                messages.error(request, 'Beklenmeyen bir hata oluştu: ' + str(e))
+
+    # Son olarak, ekranda göstermek için en son 10 görevi alalım
     tasks = Task.objects.order_by('-end_time')[:10]
     return render(request, 'gorev_ekle.html', {'tasks': tasks, 'edit_task': edit_task})
 
@@ -387,3 +424,53 @@ def arama(request):
 def food_detail(request, pk):
     food = get_object_or_404(FoodSource, pk=pk)
     return render(request, 'food_detail.html', {'food': food})
+
+
+def assign_badge_if_eligible(user, task):
+    """
+    Görev adında kullanılan anahtar kelimelere göre rozet atar.
+    Örneğin: task.name içinde 'su' geçiyorsa 'Su Kahramanı' rozeti ver.
+    """
+    if not user or not task or not task.name:
+        return
+
+    name_lower = task.name.strip().lower()
+
+    badge_map = {
+        'su': {
+            'name': 'Su Kahramanı',
+            'image': 'imasges/su.png',
+        },
+        'beslenme': {
+            'name': 'Mama Dağıtıcısı',
+            'image': 'images/mama.png',
+        },
+        'temizlik': {
+            'name': 'Temizlik Ustası',
+            'image': 'images/temizlik.png',
+        },
+        'koruyucu': {
+            'name': 'Pati Koruyucu',
+            'image': 'images/patiDostu.png',
+        },
+    }
+
+    badge_name = None
+    for keyword, bname in badge_map.items():
+        if keyword in name_lower:
+            badge_name = bname
+            break
+
+    if not badge_name:
+        return  # Uygun rozet bulunmadıysa çık
+
+    badge_obj, created = Badge.objects.get_or_create(
+        name=badge_name,
+        defaults={'description': f"{badge_name} rozeti",
+                  'image': badge_name['image']
+        }
+    )
+
+    # Eğer kullanıcı bu rozeti daha önce almamışsa, ata
+    if not UserBadge.objects.filter(user=user, badge=badge_obj).exists():
+        UserBadge.objects.create(user=user, badge=badge_obj)

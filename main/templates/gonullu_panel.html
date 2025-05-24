@@ -27,5 +27,17 @@
         <p>Henüz alınan görev yok.</p>
         {% endfor %}
     </div>
+
+    
+    {% for ub in user_badges %}
+    <div class="badge-card">
+        {% if ub.badge.icon %}
+        <img src="{{ ub.badge.icon.url }}" alt="{{ ub.badge.name }}">
+        <p>{{ ub.badge.name }}</p>
+        {% endif %}
+    </div>
+    {% empty %}
+        <p>Henüz rozetiniz yok.</p>
+    {% endfor %}
 </div>
 {% endblock %} 

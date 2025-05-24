@@ -1,30 +1,61 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block content %}
-<div class="profile-section">
-    <h1>Profil</h1>
-    <div class="profile-info">
-        <div class="profile-details">
+<div class="profile-section" style="max-width:800px; margin:2rem auto;">
+
+    <!-- Başlık -->
+    <h1 style="margin-bottom:1.5rem;">Profil</h1>
+
+    <div class="profile-info" style="display:flex; gap:2rem; flex-wrap:wrap;">
+
+        <!-- Sol Kolon: Temel Kullanıcı Bilgileri -->
+        <div class="profile-details" style="flex:1 1 300px; border:1px solid #e0e0e0; padding:1.5rem; border-radius:8px; background:#fafafa;">
             <p><b>Kullanıcı Adı:</b> {{ user.username }}</p>
             <p><b>E-posta:</b> {{ user.email }}</p>
+
             <p><b>Kullanıcı Tipi:</b> {{ profile.get_user_type_display }}</p>
+
             <p><b>Üyelik Tarihi:</b> {{ profile.join_date|date:'d-m-Y' }}</p>
-            
-            <div class="btn btn-register" style="margin-top: 1.5rem; text-align: center;">
-            <a href="/sifre_degistir" class="nav-link">Şifre Değiştir</a>
+
+            <div class="btn-change-password" style="margin-top:1.5rem; text-align:center;">
+                <a href="{% url 'sifre_degistir' %}" class="btn btn-main" style="padding:0.6rem 1.2rem;">Şifre Değiştir</a>
             </div>
         </div>
-        {% if profile.user_type == 'gonullu' %}
-        <div class="profile-badges">
-            <b>Kazanılan Rozetler:</b><br>
-            <div class="badges-list">
-                <img src="{% static 'images/mama_dagiticisi.png' %}" alt="Mama Dağıtıcısı" class="badge-img">
-                <img src="{% static 'images/su_kahramani.png' %}" alt="Pati Koruyucu" class="badge-img">
-                <img src="{% static 'images/temizlik_ustasi.png' %}" alt="Su Kahramanı" class="badge-img">
-                <img src="{% static 'images/pati_koruyucu.png' %}" alt="Temizlik Ustası" class="badge-img">
-            </div>
+
+        <!-- Sağ Kolon: Sadece Gönüllüler İçin Rozetler -->
+        {% if profile and profile.user_type == 'gonullu' %}
+        <div class="profile-badges" style="flex:1 1 300px; border:1px solid #e0e0e0; padding:1.5rem; border-radius:8px; background:#fafafa;">
+            <p><b>Kazanılan Rozetler:</b></p>
+
+            {% if user_badges %}
+                <div class="badges-container" style="display:flex; gap:1rem; flex-wrap:wrap; margin-top:0.5rem;">
+                    {% for ub in user_badges %}
+                        <div class="badge-card" style="text-align:center; border:1px solid #ddd; padding:1rem; border-radius:8px; width:120px; background:#fff;">
+                            {% if ub.badge.icon %}
+                                <img src="{{ ub.badge.icon.url }} "
+                                     alt="{{ ub.badge.name }}"
+                                     style="width:80px; height:80px; object-fit:contain; margin-bottom:0.5rem;">
+                            {% else %}
+                                <div style="width:80px; height:80px; background:#eee; display:flex;
+                                            align-items:center; justify-content:center; border-radius:50%;
+                                            margin:0 auto 0.5rem;">
+                                    {{ ub.badge.name|slice:":1" }}
+                                </div>
+                            {% endif %}
+
+                            <p style="margin:0.3rem 0 0;"><strong>{{ ub.badge.name }}</strong></p>
+                            <small style="color:#555; font-size:0.85rem;">
+                                {{ ub.awarded_at|date:"d.m.Y H:i" }}
+                            </small>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p style="margin-top:0.5rem; color:#666;">Henüz hiçbir rozet kazanmadınız.</p>
+            {% endif %}
         </div>
         {% endif %}
+
     </div>
 </div>
-{% endblock %} 
+{% endblock %}

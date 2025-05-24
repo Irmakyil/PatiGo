@@ -1,72 +1,101 @@
 {% extends 'base.html' %}
+{% load static %}
+
 {% block content %}
-<div class="panel-section">
+<div class="panel-section" style="max-width:800px; margin:2rem auto;">
     <h1>Görev Ekle</h1>
-    <div class="add-task-box">
+    <div class="add-task-box" style="border:1px solid #ddd; padding:1.5rem; border-radius:8px;">
         {% if messages %}
-            <ul class="form-messages">
+            <ul class="form-messages" style="list-style:none; padding:0; margin:0 0 1rem 0;">
                 {% for message in messages %}
-                    <li class="{{ message.tags }}">{{ message }}</li>
+                    <li class="{{ message.tags }}" style="margin-bottom:0.5rem; color: {% if message.tags == 'error' %}#c0392b{% else %}#27ae60{% endif %};">
+                        {{ message }}
+                    </li>
                 {% endfor %}
             </ul>
         {% endif %}
+
         <form method="post" action="">
             {% csrf_token %}
             {% if edit_task %}
                 <input type="hidden" name="task_id" value="{{ edit_task.id }}">
             {% endif %}
-            <div class="form-row">
-                <div class="form-group">
+
+            <div class="form-row" style="display:flex; flex-wrap:wrap; gap:1rem;">
+                <!-- Görev Başlığı -->
+                <div class="form-group" style="flex:1;">
                     <label for="name">Görev Başlığı</label>
-                    <input type="text" id="name" name="name" placeholder="Görev başlığı giriniz" required value="{{ edit_task.name|default:'' }}">
+                    <select id="name" name="name" required style="width:100%; padding:0.5rem;">
+                        <option value="" disabled {% if not edit_task.name %}selected{% endif %}>Görev başlığı seçiniz</option>
+                        <option value="su" {% if edit_task and edit_task.name == "su" %}selected{% endif %}>Su</option>
+                        <option value="beslenme" {% if edit_task and edit_task.name == "beslenme" %}selected{% endif %}>Beslenme</option>
+                        <option value="temizlik" {% if edit_task and edit_task.name == "temizlik" %}selected{% endif %}>Temizlik</option>
+                    </select>
                 </div>
-                <div class="form-group">
+
+                <!-- Bitiş Zamanı -->
+                <div class="form-group" style="flex:1;">
                     <label for="end_time">Görev Bitiş Süresi</label>
                     {% if edit_task %}
-    <input type="datetime-local" id="end_time" name="end_time" required value="{{ edit_task.end_time|date:'Y-m-d\\TH:i' }}">
-{% else %}
-    <input type="datetime-local" id="end_time" name="end_time" required>
-{% endif %}
+                        <input type="datetime-local" id="end_time" name="end_time" required
+                               value="{{ edit_task.end_time|date:'Y-m-d\\TH:i' }}" 
+                               style="width:100%; padding:0.5rem;">
+                    {% else %}
+                        <input type="datetime-local" id="end_time" name="end_time" required
+                               style="width:100%; padding:0.5rem;">
+                    {% endif %}
                 </div>
-                <div class="form-group">
+
+                <!-- Öncelik -->
+                <div class="form-group" style="flex:1;">
                     <label for="priority">Öncelik</label>
-                    <select id="priority" name="priority" required>
+                    <select id="priority" name="priority" required style="width:100%; padding:0.5rem;">
                         <option value="acil" {% if edit_task and edit_task.priority == 'acil' %}selected{% endif %}>Acil</option>
                         <option value="orta" {% if edit_task and edit_task.priority == 'orta' %}selected{% endif %}>Orta Öncelik</option>
                         <option value="normal" {% if edit_task and edit_task.priority == 'normal' %}selected{% endif %}>Normal</option>
                     </select>
                 </div>
-                <div class="form-group">
+
+                <!-- Hayvan Sayısı -->
+                <div class="form-group" style="flex:1;">
                     <label for="animal_count">Hayvan Sayısı</label>
-                    <input type="number" id="animal_count" name="animal_count" min="1" placeholder="Hayvan" required value="{{ edit_task.animal_count|default:'' }}">
+                    <input type="number" id="animal_count" name="animal_count" min="1" placeholder="Hayvan sayısı" required
+                           value="{{ edit_task.animal_count|default:'' }}"
+                           style="width:100%; padding:0.5rem;">
                 </div>
-                <div class="form-group">
+
+                <!-- Durum -->
+                <div class="form-group" style="flex:1 1 100%;">
                     <label for="status">Durum</label>
-                    <textarea id="status" name="status" rows="2" placeholder="Durum">{{ edit_task.status|default:'' }}</textarea>
+                    <textarea id="status" name="status" rows="2" placeholder="Durum" style="width:100%; padding:0.5rem;">{{ edit_task.status|default:'' }}</textarea>
                 </div>
             </div>
-            <button type="submit" class="btn btn-main" style="width:100%;margin-top:1.2rem;">{% if edit_task %}Güncelle{% else %}Görev Ekle{% endif %}</button>
+
+            <button type="submit" class="btn btn-main" style="width:100%; margin-top:1.2rem;">
+                {% if edit_task %}Güncelle{% else %}Görev Ekle{% endif %}
+            </button>
         </form>
     </div>
-    <div class="tasks-list-section">
+
+    <div class="tasks-list-section" style="margin-top:2rem;">
         <h2>Eklenen Görevler</h2>
         {% for task in tasks %}
-        <div class="task-list-box">
-            <div style="display:flex;justify-content:space-between;align-items:center;">
-                <strong>{{ task.name }}</strong>
-                <span>{{ task.end_time|date:'d.m.Y' }}</span>
+            <div class="task-list-box" style="border:1px solid #eee; padding:1rem; margin-bottom:1rem; border-radius:6px;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <strong>{{ task.name|capfirst }}</strong>
+                    <span>{{ task.end_time|date:'d.m.Y' }}</span>
+                </div>
+                <span>Hayvan Sayısı: {{ task.animal_count }}</span><br>
+                <span>Görev Bitiş Süresi: {{ task.end_time|date:'d F, H:i' }}</span><br>
+                <span>Durum: {{ task.status }}</span><br>
+                <div style="margin-top:0.7rem;">
+                    <a href="?edit={{ task.id }}" class="btn btn-edit">Düzenle</a>
+                    <a href="?delete={{ task.id }}" class="btn btn-delete" onclick="return confirm('Görev silinsin mi?');">Sil</a>
+                </div>
             </div>
-            <span>Hayvan Sayısı: {{ task.animal_count }}</span><br>
-            <span>Görev Bitiş Süresi: {{ task.end_time|date:'d F, H:i' }}</span><br>
-            <span>Durum: {{ task.status }}</span><br>
-            <div style="margin-top:0.7rem;">
-                <a href="?edit={{ task.id }}" class="btn btn-edit">Düzenle</a>
-                <a href="?delete={{ task.id }}" class="btn btn-delete" onclick="return confirm('Görev silinsin mi?');">Sil</a>
-            </div>
-        </div>
         {% empty %}
-        <p>Henüz görev eklenmedi.</p>
+            <p>Henüz görev eklenmedi.</p>
         {% endfor %}
     </div>
 </div>
-{% endblock %} 
+{% endblock %}

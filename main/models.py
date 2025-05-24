@@ -71,3 +71,23 @@ class FoodSource(models.Model):
                 pass
 
         super().save(*args, **kwargs)
+
+
+class Badge(models.Model): #rozetleri tutar
+    name = models.CharField(max_length=100, unique=True)
+    icon = models.ImageField(upload_to='images/', blank=True, null=True)
+    description = models.TextField(blank=True)
+
+    def __str__(self):
+        return self.name
+
+class UserBadge(models.Model): #hangi rozetin kazanıldığı
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    badge = models.ForeignKey(Badge, on_delete=models.CASCADE)
+    awarded_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'badge')
+
+    def __str__(self):
+        return f"{self.user.username} - {self.badge.name}"

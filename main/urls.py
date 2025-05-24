@@ -1,5 +1,7 @@
 from django.urls import path
 from . import views
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('', views.home, name='home'),
@@ -8,7 +10,7 @@ urlpatterns = [
     path('giris', views.giris, name='giris'),
     path('kayit', views.kayit, name='kayit'),
     path('gonullu-panel', views.gonullu_panel, name='gonullu_panel'),
-    path('gorev-al', views.gorev_al, name='gorev_al'),
+    path('gorev-al/', views.gorev_al, name='gorev_al'),
     path('profil', views.profil, name='profil'),
     path('cikis', views.cikis, name='cikis'),
     path('gorev-ekle', views.gorev_ekle, name='gorev_ekle'),
@@ -18,3 +20,5 @@ urlpatterns = [
     path('sifre_degistir', views.sifre_degistir, name='sifre_degistir'),
     path('food/<int:pk>/', views.food_detail, name='food_detail'),
 ] 
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
