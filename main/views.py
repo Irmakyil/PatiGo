@@ -336,7 +336,7 @@ def gorev_ekle(request):
 
 @login_required
 def yemek_kaynagi_bildir(request):
-    # Sadece “yetkili” kullanıcıların erişebileceğini varsayıyoruz:
+    # Sadece "yetkili" kullanıcıların erişebileceğini varsayıyoruz:
     if not hasattr(request.user, 'userprofile') or request.user.userprofile.user_type != 'yetkili':
         return redirect('home')
 
@@ -359,7 +359,7 @@ def yemek_kaynagi_bildir(request):
         # 2. Geocoding: Nominatim ile adresi koordinata çevir
         try:
             geolocator = Nominatim(user_agent="patigo_app")
-            time.sleep(1)  # Nominatim’in aşırı istek engellemesini önlemek için ufak bekleme
+            time.sleep(1)  # Nominatim'in aşırı istek engellemesini önlemek için ufak bekleme
             geo = geolocator.geocode(f"{location}, Kocaeli, Türkiye")
             if geo:
                 latitude = geo.latitude
@@ -439,19 +439,19 @@ def assign_badge_if_eligible(user, task):
     badge_map = {
         'su': {
             'name': 'Su Kahramanı',
-            'image': 'imasges/su.png',
+            'icon': 'images/su_kahramani.png',
         },
         'beslenme': {
             'name': 'Mama Dağıtıcısı',
-            'image': 'images/mama.png',
+            'icon': 'images/mama_dagiticisi.png',
         },
         'temizlik': {
             'name': 'Temizlik Ustası',
-            'image': 'images/temizlik.png',
+            'icon': 'images/temizlik_ustasi.png',
         },
         'koruyucu': {
             'name': 'Pati Koruyucu',
-            'image': 'images/patiDostu.png',
+            'icon': 'images/pati_koruyucu.png',
         },
     }
 
@@ -465,12 +465,39 @@ def assign_badge_if_eligible(user, task):
         return  # Uygun rozet bulunmadıysa çık
 
     badge_obj, created = Badge.objects.get_or_create(
-        name=badge_name,
-        defaults={'description': f"{badge_name} rozeti",
-                  'image': badge_name['image']
+        name=badge_name['name'],
+        defaults={
+            'description': f"{badge_name['name']} rozeti",
+            'icon': badge_name['icon']
         }
     )
 
     # Eğer kullanıcı bu rozeti daha önce almamışsa, ata
     if not UserBadge.objects.filter(user=user, badge=badge_obj).exists():
         UserBadge.objects.create(user=user, badge=badge_obj)
+        
+import csv
+from django.http import HttpResponse
+from .models import Task
+
+def export_tasks_csv(request):
+    # CSV response oluşturuluyor
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="gorevler.csv"'
+
+    writer = csv.writer(response)
+    
+    # Başlık satırı
+    writer.writerow(['Görev Başlığı', 'Durum', 'Hayvan Sayısı', 'Bitiş Süresi'])
+
+    # Veriler
+    for task in Task.objects.all():
+        writer.writerow([
+            task.name,
+            task.status,
+            task.animal_count,
+            task.end_time.strftime('%d.%m.%Y %H:%M')
+        ])
+
+    return response
+

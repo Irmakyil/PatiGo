@@ -75,7 +75,7 @@ class FoodSource(models.Model):
 
 class Badge(models.Model): #rozetleri tutar
     name = models.CharField(max_length=100, unique=True)
-    icon = models.ImageField(upload_to='images/', blank=True, null=True)
+    icon = models.CharField(max_length=255, blank=True, null=True)  # Artık sadece yol tutacak
     description = models.TextField(blank=True)
 
     def __str__(self):

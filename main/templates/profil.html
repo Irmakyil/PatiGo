@@ -20,6 +20,9 @@
             <div class="btn-change-password" style="margin-top:1.5rem; text-align:center;">
                 <a href="{% url 'sifre_degistir' %}" class="btn btn-main" style="padding:0.6rem 1.2rem;">Şifre Değiştir</a>
             </div>
+            <div class="btn btn-register" style="margin-top: 1.5rem; text-align: center;">
+            <a href="{% url 'export_tasks' %}" class="btn btn-main">Görevleri Dışa Aktar</a>
+            </div>
         </div>
 
         <!-- Sağ Kolon: Sadece Gönüllüler İçin Rozetler -->
@@ -32,9 +35,13 @@
                     {% for ub in user_badges %}
                         <div class="badge-card" style="text-align:center; border:1px solid #ddd; padding:1rem; border-radius:8px; width:120px; background:#fff;">
                             {% if ub.badge.icon %}
-                                <img src="{{ ub.badge.icon.url }} "
+                                <img src="{% static ub.badge.icon %} "
                                      alt="{{ ub.badge.name }}"
-                                     style="width:80px; height:80px; object-fit:contain; margin-bottom:0.5rem;">
+                                     style="width:80px; height:80px; object-fit:contain; margin-bottom:0.5rem;"
+                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                <div style="display:none; width:80px; height:80px; background:#eee; align-items:center; justify-content:center; border-radius:50%; margin:0 auto 0.5rem;">
+                                    {{ ub.badge.name|slice:":1" }}
+                                </div>
                             {% else %}
                                 <div style="width:80px; height:80px; background:#eee; display:flex;
                                             align-items:center; justify-content:center; border-radius:50%;

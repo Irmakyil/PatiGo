@@ -19,6 +19,7 @@ urlpatterns = [
     path('sifremi_unuttum', views.sifremi_unuttum, name='sifremi_unuttum'),
     path('sifre_degistir', views.sifre_degistir, name='sifre_degistir'),
     path('food/<int:pk>/', views.food_detail, name='food_detail'),
+    path('export/tasks/', views.export_tasks_csv, name='export_tasks'), 
 ] 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
