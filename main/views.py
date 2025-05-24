@@ -23,6 +23,10 @@ from django.shortcuts import render, redirect
 import time
 from django.utils import timezone
 from main.models import Badge, UserBadge
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+from .models import EmailVerification
+from datetime import datetime
 
 # Create your views here.
 
@@ -175,10 +179,20 @@ def kayit(request):
         if User.objects.filter(email=email).exists():
             messages.error(request, 'Bu e-posta zaten kayıtlı.')
             return render(request, 'kayit.html')
+        
         # Kullanıcı oluştur
         user = User.objects.create_user(username=username, email=email, password=password1)
         UserProfile.objects.create(user=user, user_type=user_type)
-        messages.success(request, 'Kayıt başarılı! Giriş yapabilirsiniz.')
+        
+        # E-posta doğrulama gönder
+        try:
+            send_verification_email(user)
+            messages.success(request, 'Kayıt başarılı! Lütfen e-posta adresinizi doğrulayın.')
+        except Exception as e:
+            messages.error(request, 'E-posta gönderilirken bir hata oluştu. Lütfen daha sonra tekrar deneyin.')
+            user.delete()  # Kullanıcıyı sil
+            return render(request, 'kayit.html')
+            
         return redirect('giris')
     return render(request, 'kayit.html')
 
@@ -500,4 +514,37 @@ def export_tasks_csv(request):
         ])
 
     return response
+
+def send_verification_email(user):
+    verification = EmailVerification.create_verification(user)
+    subject = 'E-posta Adresinizi Doğrulayın'
+    html_message = render_to_string('email_dogrulama.html', {
+        'user': user,
+        'verification_url': f"http://127.0.0.1:8000/verify-email/{verification.token}/"
+    })
+    plain_message = strip_tags(html_message)
+    
+    send_mail(
+        subject,
+        plain_message,
+        settings.EMAIL_HOST_USER,
+        [user.email],
+        html_message=html_message,
+        fail_silently=False,
+    )
+
+def verify_email(request, token):
+    try:
+        verification = EmailVerification.objects.get(token=token)
+        if verification.is_token_expired():
+            messages.error(request, 'Doğrulama bağlantısının süresi dolmuş.')
+            return redirect('giris')
+        
+        verification.is_verified = True
+        verification.save()
+        messages.success(request, 'E-posta adresiniz başarıyla doğrulandı.')
+        return redirect('giris')
+    except EmailVerification.DoesNotExist:
+        messages.error(request, 'Geçersiz doğrulama bağlantısı.')
+        return redirect('giris')
 

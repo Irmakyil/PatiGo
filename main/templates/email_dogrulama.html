@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>E-posta Doğrulama</title>
+</head>
+<body>
+    <h2>Merhaba {{ user.username }},</h2>
+    <p>PatiGo hesabınızı doğrulamak için aşağıdaki bağlantıya tıklayın:</p>
+    <p>
+        <a href="{{ verification_url }}" style="background-color: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
+            E-posta Adresimi Doğrula
+        </a>
+    </p>
+    <p>Bu bağlantı 24 saat boyunca geçerlidir.</p>
+    <p>Eğer bu hesabı siz oluşturmadıysanız, bu e-postayı görmezden gelebilirsiniz.</p>
+    <br>
+    <p>Saygılarımızla,<br>PatiGo Ekibi</p>
+</body>
+</html> 
