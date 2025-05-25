@@ -32,6 +32,7 @@ class Task(models.Model):
     description = models.TextField()
     animal_count = models.PositiveIntegerField()
     end_time = models.DateTimeField()
+    location = models.CharField(max_length=200, blank=True, null=True)
     status = models.CharField(max_length=100)
     priority = models.CharField(max_length=10, choices=PRIORITY_CHOICES, default='normal')
     assigned_to = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='tasks')
@@ -47,7 +48,7 @@ class FoodSource(models.Model):
         ('teslim', 'Teslim Alındı'),
     )
     location = models.CharField(max_length=200)
-    amount = models.CharField(max_length=50)
+    amount = models.CharField(max_length=50, blank=True, null=True)
     description = models.TextField(blank=True)
     photo = models.ImageField(upload_to='food_photos/', blank=True, null=True)
     reported_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)

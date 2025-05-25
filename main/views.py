@@ -59,7 +59,7 @@ def gorev_noktalari(request):
             food.save()
         return redirect('gorev_noktalari')
 
-    foods = FoodSource.objects.all().order_by('-reported_at')
+    all_foods = FoodSource.objects.all()
     foods_json = json.dumps([
         {
             'id': food.id,
@@ -71,8 +71,10 @@ def gorev_noktalari(request):
             'photo_url': food.photo.url if food.photo else None,
             'reported_at': food.reported_at.strftime('%d.%m.%Y, %H:%M')
         }
-        for food in foods if food.latitude and food.longitude
+        for food in all_foods if food.latitude and food.longitude
     ])
+    foods = FoodSource.objects.filter(reported_by__userprofile__user_type='yetkili').order_by('-reported_at')
+    
     return render(request, 'gorev_noktalari.html', {
         'foods': foods,
         'foods_json': foods_json
@@ -286,8 +288,9 @@ def gorev_ekle(request):
         priority = request.POST.get('priority')
         animal_count = request.POST.get('animal_count')
         status = request.POST.get('status')
+        location = request.POST.get('location')
 
-        if not (name and end_time and priority and animal_count and status):
+        if not (name and end_time and priority and animal_count and status and location):
             messages.error(request, 'Tüm alanları doldurmalısınız.')
         else:
             try:
@@ -299,7 +302,7 @@ def gorev_ekle(request):
                     task.priority = priority
                     task.animal_count = animal_count
                     task.status = status
-                    task.description = status
+                    task.location = location
                     task.save()
                     messages.success(request, 'Görev güncellendi!')
                 else:
@@ -309,7 +312,7 @@ def gorev_ekle(request):
                         priority=priority,
                         animal_count=animal_count,
                         status=status,
-                        description=status
+                        location=location
                     )
                     messages.success(request, 'Görev başarıyla eklendi!')
                 return redirect('gorev_ekle')
@@ -319,8 +322,14 @@ def gorev_ekle(request):
                 messages.error(request, 'Beklenmeyen bir hata oluştu: ' + str(e))
 
     tasks = Task.objects.order_by('-end_time')[:10]
-    return render(request, 'gorev_ekle.html', {'tasks': tasks, 'edit_task': edit_task})
-
+    
+    # Yeşil ikonlar için dinamik konumlar
+    yesil_nokta_lokasyonlar = list(
+        FoodSource.objects.filter(description__icontains="Görev Noktası")
+        .values_list('location', flat=True)
+        .distinct()
+    )
+    return render(request, 'gorev_ekle.html', {'tasks': tasks, 'edit_task': edit_task, 'yesil_nokta_lokasyonlar': yesil_nokta_lokasyonlar})
 
 @login_required
 def yemek_kaynagi_bildir(request):
@@ -334,9 +343,9 @@ def yemek_kaynagi_bildir(request):
         description = request.POST.get('description')
         photo = request.FILES.get('photo')
 
-        if not (location and amount):
+        if not location:
             return render(request, 'yemek_kaynagi_bildir.html', {
-                'error': 'Konum ve miktar alanları zorunludur.'
+                'error': 'Konum alanı zorunludur.'
             })
 
         latitude = None
@@ -363,7 +372,14 @@ def yemek_kaynagi_bildir(request):
         )
         return redirect('gorev_noktalari')
 
-    return render(request, 'yemek_kaynagi_bildir.html')
+    kirmizi_nokta_lokasyonlar = list(
+        FoodSource.objects.filter(description__icontains="Yemek Artık Noktası")
+        .values_list('location', flat=True)
+        .distinct()
+    )
+    return render(request, 'yemek_kaynagi_bildir.html', {
+        'kirmizi_nokta_lokasyonlar': kirmizi_nokta_lokasyonlar,
+    })
 
 
 def arama(request):

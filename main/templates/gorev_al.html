@@ -14,13 +14,14 @@
         {% for task in tasks %}
         <div class="task-box">
             <div class="task-header">
-                <strong>{{ task.name }}</strong>
+                <strong>{{ task.name|capfirst }}</strong>
                 {% if task.priority == 'acil' %}
                     <span class="priority-label priority-acil">Acil</span>
                 {% elif task.priority == 'orta' %}
                     <span class="priority-label priority-orta">Orta Öncelik</span>
                 {% endif %}
             </div>
+            <span>Konum: {{ task.location }}</span><br>
             <span>Hayvan Sayısı: {{ task.animal_count }}</span><br>
             <span>Görev Bitiş Süresi: {{ task.end_time|date:'d F, H:i' }}</span><br>
             <span>Durum: {{ task.status }}</span><br>

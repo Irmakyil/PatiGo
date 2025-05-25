@@ -44,10 +44,18 @@
             popupAnchor: [1, -34],
             shadowSize: [41, 41]
         });
+        const redIcon = new L.Icon({
+        iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
+            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+            iconSize: [25, 41],
+            iconAnchor: [12, 41],
+            popupAnchor: [1, -34],
+            shadowSize: [41, 41]
+        });
 
         // 4. Tarayıcıdan kullanıcı konumunu al ve mavi marker ekle
         if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(function(position) {
+            navigator.geolocation.getCurrentPosition(function (position) {
                 const userLat = position.coords.latitude;
                 const userLng = position.coords.longitude;
 
@@ -56,7 +64,7 @@
                     .addTo(map)
                     .bindPopup('<strong>Buradasınız</strong>')
                     .openPopup();
-            }, function(error) {
+            }, function (error) {
                 console.warn('Kullanıcı konumu alınamadı:', error);
             });
         }
@@ -66,12 +74,17 @@
             if (food.lat && food.lng) {
                 const popup = `
                     <b>${food.location}</b><br>
-                    Miktar: ${food.amount}<br>
                     Tarih: ${food.reported_at}<br>
                     ${food.description ? 'Açıklama: ' + food.description + '<br>' : ''}
                     ${food.photo_url ? '<img src="' + food.photo_url + '" width="100"><br>' : ''}
                 `;
-                L.marker([food.lat, food.lng], { icon: greenIcon })
+                let markerIcon = greenIcon;
+                if (food.description && food.description.includes('Yemek Artık Noktası')) {
+                    markerIcon = redIcon;
+                } else if (food.description && food.description.includes('Görev Noktası')) {
+                    markerIcon = greenIcon;
+                }
+                L.marker([food.lat, food.lng], { icon: markerIcon })
                     .addTo(map)
                     .bindPopup(popup);
             }
@@ -83,22 +96,22 @@
 <div class="tasks-list-section tasks-list-section-wide">
     <h2>Aktif Yemek Kaynakları</h2>
     {% for food in foods %}
-        <div class="food-box food-box-bordered">
-            <b>Konum:</b> {{ food.location }}<br>
-            <b>Miktar:</b> {{ food.amount }}<br>
-            <b>Bildirilen Zaman:</b> {{ food.reported_at|date:'d.m.Y, H:i' }}<br>
-            {% if food.description %}<b>Açıklama:</b> {{ food.description }}<br>{% endif %}
-            {% if food.photo %}<img src="{{ food.photo.url }}" class="food-photo food-photo-small"><br>{% endif %}
-            {% if user.userprofile.user_type == 'gonullu' and food.status == 'bekliyor' %}
-                <form method="post" action="{% url 'gorev_noktalari' %}" class="food-form-mt">
-                    {% csrf_token %}
-                    <input type="hidden" name="food_id" value="{{ food.id }}">
-                    <button type="submit" class="btn btn-success">Teslim Alındı</button>
-                </form>
-            {% endif %}
-        </div>
+    <div class="food-box food-box-bordered">
+        <b>Konum:</b> {{ food.location }}<br>
+        <b>Miktar:</b> {{ food.amount }}<br>
+        <b>Bildirilen Zaman:</b> {{ food.reported_at|date:'d.m.Y, H:i' }}<br>
+        {% if food.description %}<b>Açıklama:</b> {{ food.description }}<br>{% endif %}
+        {% if food.photo %}<img src="{{ food.photo.url }}" class="food-photo food-photo-small"><br>{% endif %}
+        {% if user.userprofile.user_type == 'gonullu' and food.status == 'bekliyor' %}
+        <form method="post" action="{% url 'gorev_noktalari' %}" class="food-form-mt">
+            {% csrf_token %}
+            <input type="hidden" name="food_id" value="{{ food.id }}">
+            <button type="submit" class="btn btn-success">Teslim Alındı</button>
+        </form>
+        {% endif %}
+    </div>
     {% empty %}
-        <p>Henüz yemek kaynağı bildirimi yok.</p>
+    <p>Henüz yemek kaynağı bildirimi yok.</p>
     {% endfor %}
 </div>
 {% endif %}
