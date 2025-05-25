@@ -7,8 +7,6 @@ from django.utils.crypto import get_random_string
 from django.utils import timezone
 import datetime
 
-# Create your models here.
-
 class UserProfile(models.Model):
     USER_TYPES = (
         ('gonullu', 'Gönüllü'),
@@ -80,7 +78,7 @@ class FoodSource(models.Model):
 
 class Badge(models.Model): #rozetleri tutar
     name = models.CharField(max_length=100, unique=True)
-    icon = models.CharField(max_length=255, blank=True, null=True)  # Artık sadece yol tutacak
+    icon = models.CharField(max_length=255, blank=True, null=True) 
     description = models.TextField(blank=True)
 
     def __str__(self):

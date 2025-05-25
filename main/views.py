@@ -1,4 +1,3 @@
-# Standard library imports
 import csv
 import json
 import random
@@ -7,7 +6,6 @@ import string
 import time
 from datetime import datetime, timedelta
 
-# Django imports
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
@@ -24,14 +22,11 @@ from django.template.loader import render_to_string
 from django.utils import timezone
 from django.utils.html import strip_tags
 
-# Third-party imports
 from geopy.geocoders import Nominatim
 from geopy.exc import GeocoderUnavailable, GeocoderServiceError
 
-# Local imports
 from .models import Badge, EmailVerification, FoodSource, Task, UserBadge, UserProfile
 
-# ---------------------- Views ----------------------
 
 def home(request):
     """Anasayfa istatistiklerini gösterir."""
@@ -280,7 +275,7 @@ def gorev_ekle(request):
             edit_task = None
             messages.error(request, 'Görev bulunamadı.')
 
-    # POST: Ekleme veya Güncelleme
+    # Ekleme veya Güncelleme
     if request.method == 'POST':
         task_id = request.POST.get('task_id')
         name = request.POST.get('name')

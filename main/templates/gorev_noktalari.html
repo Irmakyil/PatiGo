@@ -9,7 +9,7 @@
 
 <div id="map" class="map-container"></div>
 
-<!-- Leaflet CSS/JS -->
+<!-- Harita -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
@@ -18,16 +18,16 @@
     const foods = JSON.parse('{{ foods_json|safe }}');
 
     document.addEventListener('DOMContentLoaded', function () {
-        // 1. Haritayı başlat: KOÜ konumunu merkeze alıyoruz
+        // Haritayı başlat: KOÜ konumunu merkeze alıyoruz
         var map = L.map('map').setView([40.8262, 29.9192], 16);
 
-        // 2. OpenStreetMap katmanını ekle
+        // OpenStreetMap katmanını ekle
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
             attribution: '© OpenStreetMap'
         }).addTo(map);
 
-        // 3. İkonları tanımla
+        // İkonları tanımla
         const greenIcon = new L.Icon({
             iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png',
             shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
@@ -53,7 +53,7 @@
             shadowSize: [41, 41]
         });
 
-        // 4. Tarayıcıdan kullanıcı konumunu al ve mavi marker ekle
+        // Tarayıcıdan kullanıcı konumunu al ve mavi marker ekle
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(function (position) {
                 const userLat = position.coords.latitude;
@@ -69,7 +69,7 @@
             });
         }
 
-        // 5. Her food kaydı için yeşil marker ekle
+        // Her food kaydı için yeşil marker ekle
         foods.forEach(food => {
             if (food.lat && food.lng) {
                 const popup = `
