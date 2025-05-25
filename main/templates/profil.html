@@ -11,7 +11,7 @@
             <p><b>E-posta:</b> {{ user.email }}</p>
             <p><b>Kullanıcı Tipi:</b> {{ profile.get_user_type_display }}</p>
             <p><b>Üyelik Tarihi:</b> {{ profile.join_date|date:'d-m-Y' }}</p>
-            <div class="btn-change-password">
+            <div class="btn-change-password" style="text-align: center;">
                 <a href="{% url 'sifre_degistir' %}" class="btn btn-main">Şifre Değiştir</a>
             </div>
              <div class="profile-export-btn">

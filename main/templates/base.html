@@ -12,7 +12,7 @@
         integrity="sha256-sA+e2EZZE5jghYJE3XVuywFw6pw7a732GZKpQaP0hC8="
         crossorigin=""/>
 </head>
-<body>
+<body style="min-height: 100vh; display: flex; flex-direction: column; margin: 0;">
     <nav class="navbar">
         <div class="navbar-left">
             {% load static %}
@@ -56,7 +56,7 @@
             {% endif %}
         </div>
     </nav>
-    <main>
+    <main style="flex-grow: 1;">
         {% block content %}{% endblock %}
     </main>
     <footer class="footer">

@@ -54,6 +54,7 @@ class FoodSource(models.Model):
     reported_at = models.DateTimeField(auto_now_add=True)
     latitude = models.FloatField(null=True, blank=True)
     longitude = models.FloatField(null=True, blank=True)
+    show_on_map = models.BooleanField(default=True)
 
     def __str__(self):
         return f"{self.location} - {self.amount}"

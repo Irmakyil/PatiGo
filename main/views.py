@@ -54,7 +54,7 @@ def gorev_noktalari(request):
             food.save()
         return redirect('gorev_noktalari')
 
-    all_foods = FoodSource.objects.all()
+    all_foods = FoodSource.objects.filter(show_on_map=True)
     foods_json = json.dumps([
         {
             'id': food.id,
@@ -363,7 +363,8 @@ def yemek_kaynagi_bildir(request):
             photo=photo,
             reported_by=request.user,
             latitude=latitude,
-            longitude=longitude
+            longitude=longitude,
+            show_on_map=False
         )
         return redirect('gorev_noktalari')
 
