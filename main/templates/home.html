@@ -1,16 +1,17 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block content %}
+
 <div class="hero-section">
     <h1>Kampüs Hayvanları İçin Dijital Destek Platformu</h1>
     <div class="about-box">
         <div class="about-bg"></div>
         <div class="about-content">
             <h2>Hakkında</h2>
-            <p>Pati Dostu, kampüsteki sokak hayvanlarına destek olmak için oluşturulmuş dijital bir platformdur. Gönüllüler
-                aracılığıyla beslenme noktalarının düzenli kontrolü, mama tedariki ve hayvanların genel sağlık durumunun
-                takibi yapılmaktadır. Sistem üzerinden görev alabilir, raporlar oluşturabilir ve kampüs hayvanlarının iyi
-                bir yaşam sürmesi için katkıda bulunabilirsiniz.</p>
+            <p>Pati Dostu, kampüsteki sokak hayvanlarına destek olmak için oluşturulmuş dijital bir platformdur.
+                Gönüllüler aracılığıyla beslenme noktalarının düzenli kontrolü, mama tedariki ve hayvanların genel sağlık
+                durumunun takibi yapılmaktadır. Sistem üzerinden görev alabilir, raporlar oluşturabilir ve kampüs
+                hayvanlarının iyi bir yaşam sürmesi için katkıda bulunabilirsiniz.</p>
             <div class="about-buttons">
                 {% if not user.is_authenticated %}
                 <a href="/gonullu-ol" class="btn btn-main">Gönüllü Ol</a>
@@ -20,24 +21,28 @@
         </div>
     </div>
 </div>
+
 <div class="stats-section">
-      <div class="stat-box">
-          <span class="stat-number">{{ active_feeding_points }}</span>
-          <span class="stat-label">Aktif Beslenme Noktası</span>
-      </div>
-      <div class="stat-box">
-          <span class="stat-number">{{ volunteers_count }}</span>
-          <span class="stat-label">Kayıtlı Gönüllü</span>
-      </div>
-      <div class="stat-box">
-          <span class="stat-number">{{ food_sources_count }} kg </span>
-          <span class="stat-label">Yemek Kaynağı</span>
-      </div>
-      <div class="stat-box">
-          <span class="stat-number">{{ weekly_food_count }}</span>
-          <span class="stat-label">Haftalık Yemek Kaynağı Bildirimi</span>
-      </div>
-  </div>
+    <div class="stat-box">
+        <span class="stat-number">{{ active_feeding_points }}</span>
+        <span class="stat-label">Aktif Beslenme Noktası</span>
+    </div>
+    <div class="stat-box">
+        <span class="stat-number">{{ volunteers_count }}</span>
+        <span class="stat-label">Kayıtlı Gönüllü</span>
+    </div>
+    <div class="stat-box">
+        <span class="stat-number">{{ food_sources_count }} kg</span>
+        <span class="stat-label">Yemek Kaynağı</span>
+    </div>
+    <div class="stat-box">
+        <span class="stat-number">{{ weekly_food_count }}</span>
+        <span class="stat-label">Haftalık Yemek Kaynağı Bildirimi</span>
+    </div>
+</div>
+
+
+
 <div class="features-section">
     <h2>Patigo Özellikleri</h2>
     <div class="features-grid">
@@ -49,7 +54,7 @@
         <div class="feature-box">
             <img src="{% static 'images/yemek_artigi.png' %}" alt="Planlama" class="feature-img">
             <strong>Yemek Artığı Planlaması</strong>
-            <p>Kampüs içindeki tüm beslenme noktalarını harita üzerinde görüntüleyin, durumlarını takip edin.</p>
+            <p>Yemek artıklarını planlı bir şekilde beslenme noktalarına yönlendirin.</p>
         </div>
         <div class="feature-box">
             <img src="{% static 'images/gonullu.png' %}" alt="Takip Sistemi" class="feature-img">
@@ -61,7 +66,7 @@
         <div class="feature-box">
             <img src="{% static 'images/takip.png' %}" alt="Beslenme Takibi" class="feature-img">
             <strong>Beslenme Takibi</strong>
-            <p>Hangi beslenme noktasında ne zaman, hangi hayvanın beslendiğini takip edin.</p>
+            <p>Hangi noktada ne zaman, hangi hayvanın beslendiğini takip edin.</p>
         </div>
         <div class="feature-box">
             <img src="{% static 'images/rozet.png' %}" alt="Rozetler" class="feature-img">
@@ -71,9 +76,87 @@
         <div class="feature-box">
             <img src="{% static 'images/acil_durum.png' %}" alt="Acil Durum" class="feature-img">
             <strong>Acil Durum Bildirimleri</strong>
-            <p>Hayvanlardaki sağlık sorunları, beslenme eksiklikleri için acil durum bildirimlerini yönetin.</p>
+            <p>Hayvanlardaki sağlık sorunları, beslenme eksiklikleri için acil bildirimleri yönetin.</p>
         </div>
     </div>
 </div>
+
+
+
+<div class="video-section">
+  <h2>Hayvan Dostlarımız İçin Bilgiler</h2>
+  <div class="video-card-list">
+    
+    <!-- 1. Video Kartı -->
+    <div class="video-card">
+      <video
+        src="{% static 'images/feedVideo.mp4' %}"
+        autoplay
+        muted
+        loop
+        playsinline>
+        Tarayıcı video etiketini desteklemiyor.
+      </video>
+      <div class="video-title">
+        Kış Aylarında Besleme Önerileri
+      </div>
+      <div class="video-overlay">
+        <h4>Artan Kalori İhtiyacı</h4>
+        <p>
+          Soğuk havalarda vücut sıcaklığını korumak için metabolizma hızlanır. Bu nedenle hayvanlar,
+          normal mevsimlere kıyasla günde yaklaşık %25–%50 daha fazla kaloriye ihtiyaç duyabilir.
+        
+          Yağ, gram başına karbonhidrat ve proteine göre daha fazla enerji sunar (1 g yağ ≈ 9 kcal). Bu yüzden
+          mama seçerken içeriği mümkünse en az %12–%15 yağ oranına sahip kuru mamalardan yana tercih edebilirsiniz.
+        
+          Kas kütlesini korumak ve hastalıklara karşı bağışıklığı güçlü tutmak için proteinler önemlidir. Kışlık
+          mamalarda %25–%30 oranında kaliteli (et, balık, tavuk gibi) protein bulunmasına dikkat edin.
+        </p>
+      </div>
+    </div>
+    
+    <!-- 2. Video Kartı -->
+    <div class="video-card">
+      <video
+        src="{% static 'images/helpVideo.mp4' %}"
+        autoplay
+        muted
+        loop
+        playsinline>
+        Tarayıcı video etiketini desteklemiyor.
+      </video>
+      <div class="video-title">
+        Kampüste İlk Yardım Rehberi
+      </div>
+      <div class="video-overlay">
+        <p>
+        Kampüste yaralı bir hayvan gördüğünüzde önce güvenli bir mesafeden durumu değerlendirin; hayvanın yarası mı yoksa şokta mı olduğunu gözlemleyin ve çevrede ek tehlike olup olmadığını kontrol edin. Kalın eldiven ve uzun kollu giysiyle yaklaşarak yaralı bölgeyi temiz su veya salinle yıkayıp antiseptikle dezenfekte edin, ardından steril gazlı bezle sarın. Derin yaralarda doğrudan baskı uygulayarak kanamayı durdurun, kırık şüphesi varsa hayvanı hareket ettirmeyin ve acilen veteriner desteği isteyin. Yanık veya kimyasal madde temasında bölgeyi ılık suyla temizleyip veteriner onayıyla pansuman yapın, şok belirtisi varsa hayvanı sıcak tutacak şekilde örtün ve hemen kampüs veterineri veya ilgili ekipleri bilgilendirerek uygun bir taşıma çantasıyla profesyonel bakıma sevk edin.        </p>
+      </div>
+    </div>
+    
+    <!-- 3. Video Kartı -->
+    <div class="video-card">
+      <video
+        src="{% static 'images/gonulluVideo.mp4' %}"
+        autoplay
+        muted
+        loop
+        playsinline>
+        Tarayıcı video etiketini desteklemiyor.
+      </video>
+      <div class="video-title">
+        Gönüllülük Motivasyonu
+      </div>
+      <div class="video-overlay">
+        <p>
+          Kampüsteki sokak hayvanlarına yardım etmek, onların yaşamlarını doğrudan iyileştirmenin yanı sıra içimizdeki şefkat ve sorumluluk duygusunu da besler. Bir mama kabı koymak, su eklemek, basit bir yuva hazırlamak gibi küçük adımlar, soğuk kış günlerinde onlara umut olur. Gönüllü olarak hem empatiyi güçlendirir hem de takım çalışması, sabır ve paylaşma becerilerimizi geliştiririz. Bir araya gelen gönüllüler, tek başına ulaşamayacağımız yerlere birlikte ulaşır; bu sayede kampüsümüz daha dayanışmacı ve duyarlı bir toplum haline gelir. Küçük bir katkı bile büyük bir fark yaratır; gönüllü ol, çünkü en anlamlı değişim, adım attığın yerde başlar. ❤️
+        </p>
+      </div>
+    </div>
+    
+  </div>
 </div>
+
 {% endblock %}
+
+

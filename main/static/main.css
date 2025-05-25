@@ -1112,3 +1112,131 @@ body {
         font-size: 1.08rem;
     }
 }
+
+/* ------------------------------------------------------------
+   1. Video Bölümü Genel Stil
+------------------------------------------------------------ */
+.video-section {
+  padding: 60px 20px;
+  background-color: #fefefe;
+  text-align: center;
+}
+
+.video-section h2 {
+  font-size: 28px;
+  margin-bottom: 40px;
+  color: #333;
+}
+
+/* ------------------------------------------------------------
+   2. Video Kart Listesi: Alt Alta, Aralarında 50px Boşluk
+------------------------------------------------------------ */
+.video-card-list {
+  display: flex;
+  flex-direction: column; /* Kartlar alt alta */
+  gap: 80px;              /* Kartlar arasında 50px boşluk */
+  align-items: center;
+}
+
+/* ------------------------------------------------------------
+   3. Her Bir Video Kartı
+------------------------------------------------------------ */
+.video-card {
+  position: relative;
+  width: 950px;           /* Kartın genişliği */
+  height: 400px;           /* Kart yüksekliğini 16:9 oranında sabitledik */
+  background-color: #000;  /* Video siyah arka planıyla uyumlu */
+  border-radius: 12px;
+  overflow: hidden;        /* Taşmayı engeller; video ve overlay içinde kalır */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Kart hover efekti: biraz büyüsün, gölge derinleşsin */
+.video-card:hover {
+  transform: scale(1.02);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+/* ------------------------------------------------------------
+   4. Video Etiketi: Kartın Tamamını Kapsayacak
+------------------------------------------------------------ */
+.video-card video {
+  width: 100%;
+  height: 100%;           /* Konteynerin tamamını dolduracak */
+  object-fit: cover;      /* Oranı korunarak kırpma/küçültme */
+  display: block;
+}
+
+/* ------------------------------------------------------------
+   5. Kart Üzerindeki Sabit Başlık
+------------------------------------------------------------ */
+.video-title {
+  position: absolute;
+  bottom: 16px;               /* Kartın altından 16px yukarıda */
+  left: 16px;                 /* Kartın solundan 16px içeride */
+  right: 16px;                /* Kartın sağından 16px içeride */
+  background-color: rgba(0, 0, 0, 0.7); /* Koyu yarı saydam zemin */
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 20px;            /* Daha okunaklı bir boyut */
+  font-family: 'Trebuchet MS', Helvetica, sans-serif; /* Göz alıcı, modern font */
+  text-align: left;
+  z-index: 2;                 /* Overlay’ın altında kalır */
+  overflow-wrap: break-word;  /* Uzun kelimeleri kır */
+  white-space: normal;        /* Satır içi taşmayı önle */
+}
+
+/* ------------------------------------------------------------
+   6. Hover’da Görünecek Detay Metin Alanı (Overlay)
+------------------------------------------------------------ */
+.video-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8); /* Koyu yarı saydam siyah */
+  padding: 24px;
+  opacity: 0;                  /* Başlangıçta görünmez */
+  pointer-events: none;        /* Tıklanamaz */
+  transition: opacity 0.4s ease, transform 0.4s ease;
+  transform: translateY(10px); /* Bir miktar aşağıdan başla */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  z-index: 3;                  /* Başlığın üzerinde yer alır */
+}
+
+/* Kartın üzerine gelindiğinde overlay’i göster */
+.video-card:hover .video-overlay {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);    /* Doğru pozisyona gelsin */
+}
+
+/* ------------------------------------------------------------
+   7. Overlay İçindeki Başlık (h4) ve Paragraflar
+------------------------------------------------------------ */
+.video-overlay h4 {
+  font-size: 20px;
+  color: #fff;                 /* Beyaz, koyu zemin üzerinde göz alıcı */
+  margin: 0 0 12px;
+  font-family: 'Trebuchet MS', Helvetica, sans-serif;
+  line-height: 1.2;
+  overflow-wrap: break-word;   /* Uzun kelimeleri satır içinde kır */
+  white-space: normal;         /* Satır içi taşmayı önle */
+}
+
+.video-overlay p {
+  font-size: 16px;
+  color: #f0f0f0;              /* Açık gri-beyaz, koyu zeminde kontrastlı */
+  margin: 0 0 16px;            /* Alt boşluk, yatay boşluk padding’dan geliyor */
+  line-height: 1.4;
+  font-family: 'Arial', sans-serif;
+  overflow-wrap: break-word;   /* Uzun kelimeleri satır içinde kır */
+  white-space: normal;         /* Satır içi taşmayı önle */
+}
+
