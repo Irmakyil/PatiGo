@@ -1112,10 +1112,7 @@ body {
         font-size: 1.08rem;
     }
 }
-
-/* ------------------------------------------------------------
-   1. Video Bölümü Genel Stil
------------------------------------------------------------- */
+/*  Video */
 .video-section {
   padding: 60px 20px;
   background-color: #fefefe;
@@ -1125,118 +1122,152 @@ body {
 .video-section h2 {
   font-size: 28px;
   margin-bottom: 40px;
-  color: #333;
+  color: #555; 
 }
 
-/* ------------------------------------------------------------
-   2. Video Kart Listesi: Alt Alta, Aralarında 50px Boşluk
------------------------------------------------------------- */
+
 .video-card-list {
   display: flex;
-  flex-direction: column; /* Kartlar alt alta */
-  gap: 80px;              /* Kartlar arasında 50px boşluk */
+  flex-direction: column;
+  gap: 80px;
   align-items: center;
 }
 
-/* ------------------------------------------------------------
-   3. Her Bir Video Kartı
------------------------------------------------------------- */
+
 .video-card {
   position: relative;
-  width: 950px;           /* Kartın genişliği */
-  height: 400px;           /* Kart yüksekliğini 16:9 oranında sabitledik */
-  background-color: #000;  /* Video siyah arka planıyla uyumlu */
+  width: 950px;
+  height: 400px;
+  background-color: #000;
   border-radius: 12px;
-  overflow: hidden;        /* Taşmayı engeller; video ve overlay içinde kalır */
+  overflow: hidden;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   cursor: pointer;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* Kart hover efekti: biraz büyüsün, gölge derinleşsin */
 .video-card:hover {
   transform: scale(1.02);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
 }
 
-/* ------------------------------------------------------------
-   4. Video Etiketi: Kartın Tamamını Kapsayacak
------------------------------------------------------------- */
 .video-card video {
   width: 100%;
-  height: 100%;           /* Konteynerin tamamını dolduracak */
-  object-fit: cover;      /* Oranı korunarak kırpma/küçültme */
+  height: 100%;
+  object-fit: cover;
   display: block;
 }
 
-/* ------------------------------------------------------------
-   5. Kart Üzerindeki Sabit Başlık
------------------------------------------------------------- */
+/* Kart Üzerindeki Başlık*/
 .video-title {
   position: absolute;
-  bottom: 16px;               /* Kartın altından 16px yukarıda */
-  left: 16px;                 /* Kartın solundan 16px içeride */
-  right: 16px;                /* Kartın sağından 16px içeride */
-  background-color: rgba(0, 0, 0, 0.7); /* Koyu yarı saydam zemin */
-  color: #fff;
-  padding: 8px 12px;
-  border-radius: 8px;
-  font-size: 20px;            /* Daha okunaklı bir boyut */
-  font-family: 'Trebuchet MS', Helvetica, sans-serif; /* Göz alıcı, modern font */
-  text-align: left;
-  z-index: 2;                 /* Overlay’ın altında kalır */
-  overflow-wrap: break-word;  /* Uzun kelimeleri kır */
-  white-space: normal;        /* Satır içi taşmayı önle */
+  bottom: 16px;
+  left: 16px;
+  right: 16px;
+  /* Videonun hafif karartılmış zeminini korumak için yarı saydam koyu zemin */
+  background-color: rgba(20, 20, 20, 0.5);
+  color: #d0e8d0; /* Soft pastel yeşilimsi ton */
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-size: 20px;
+  font-family: 'Trebuchet MS', Helvetica, sans-serif;
+  text-align: center;
+  z-index: 2;
+  overflow-wrap: break-word;
+  white-space: normal;
+  transition: transform 0.3s ease;
 }
 
-/* ------------------------------------------------------------
-   6. Hover’da Görünecek Detay Metin Alanı (Overlay)
------------------------------------------------------------- */
+.video-card:hover .video-title {
+  transform: scale(1.02);
+}
+
+/*Videoyu Karartan Overlay*/
 .video-overlay {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.8); /* Koyu yarı saydam siyah */
+  /* Videoyu karartan yarı saydam siyah zemin */
+  background-color: rgba(39, 38, 38, 0.89);
   padding: 24px;
-  opacity: 0;                  /* Başlangıçta görünmez */
-  pointer-events: none;        /* Tıklanamaz */
+  box-sizing: border-box;
+  opacity: 0;
+  pointer-events: none;
   transition: opacity 0.4s ease, transform 0.4s ease;
-  transform: translateY(10px); /* Bir miktar aşağıdan başla */
+  transform: translateY(10px);
   display: flex;
   flex-direction: column;
   justify-content: center;
-  z-index: 3;                  /* Başlığın üzerinde yer alır */
+  z-index: 3;
+  overflow-y: auto;
 }
 
-/* Kartın üzerine gelindiğinde overlay’i göster */
 .video-card:hover .video-overlay {
   opacity: 1;
   pointer-events: auto;
-  transform: translateY(0);    /* Doğru pozisyona gelsin */
+  transform: translateY(0);
 }
 
-/* ------------------------------------------------------------
-   7. Overlay İçindeki Başlık (h4) ve Paragraflar
------------------------------------------------------------- */
+/* h4 */
 .video-overlay h4 {
-  font-size: 20px;
-  color: #fff;                 /* Beyaz, koyu zemin üzerinde göz alıcı */
+  font-size: 22px;
+  color: #a3cfa3; 
   margin: 0 0 12px;
-  font-family: 'Trebuchet MS', Helvetica, sans-serif;
-  line-height: 1.2;
-  overflow-wrap: break-word;   /* Uzun kelimeleri satır içinde kır */
-  white-space: normal;         /* Satır içi taşmayı önle */
+  font-family: 'Arial', sans-serif; 
+  
+  background: none;
+  display: inline-block;
+  padding: 0;
+  border-radius: 0;
+  overflow-wrap: break-word;
+  white-space: normal;
 }
 
+/* p */
 .video-overlay p {
   font-size: 16px;
-  color: #f0f0f0;              /* Açık gri-beyaz, koyu zeminde kontrastlı */
-  margin: 0 0 16px;            /* Alt boşluk, yatay boşluk padding’dan geliyor */
-  line-height: 1.4;
+  color: #e0f2e0; 
+  margin: 0 0 16px;
+  line-height: 1.5;
   font-family: 'Arial', sans-serif;
-  overflow-wrap: break-word;   /* Uzun kelimeleri satır içinde kır */
-  white-space: normal;         /* Satır içi taşmayı önle */
+  background: none; /* Arka planla uğraşmaya gerek yok, overlay zaten karartıyor */
+  padding: 0;
+  overflow-wrap: break-word;
+  white-space: normal;
 }
 
+/* scroll */
+.video-overlay::-webkit-scrollbar {
+  width: 6px;
+}
+
+.video-overlay::-webkit-scrollbar-thumb {
+  background-color: rgba(62, 90, 62, 0.6); 
+  border-radius: 3px;
+}
+
+.video-overlay::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* 
+    ekran daraldığında daraltma
+ */
+@media (max-width: 1000px) {
+  .video-card {
+    width: 90%;
+    height: auto; /* İçeriğe göre yükseklik */
+  }
+  .video-title {
+    font-size: 18px;
+    padding: 8px 12px;
+  }
+  .video-overlay h4 {
+    font-size: 20px;
+  }
+  .video-overlay p {
+    font-size: 15px;
+  }
+}
