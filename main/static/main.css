@@ -1271,3 +1271,70 @@ body {
     font-size: 15px;
   }
 }
+
+.istatistik-kutu {
+    max-width: 900px;
+    margin: 2.5rem auto;
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 2px 8px #0001;
+    padding: 2rem 2.5rem;
+}
+
+.istatistik-baslik {
+    color: #194a37;
+    text-align: center;
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+}
+
+.istatistik-tablo {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+    background: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.istatistik-tablo th,
+.istatistik-tablo td {
+    padding: 1rem;
+    text-align: center;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.istatistik-tablo th {
+    background: #194a37;
+    color: #fff;
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.istatistik-tablo tr:last-child td {
+    border-bottom: none;
+}
+
+.istatistik-tablo tr:nth-child(even) {
+    background: #f7f7f7;
+}
+
+.istatistik-tablo tr:hover {
+    background: #f0f0f0;
+}
+
+@media (max-width: 900px) {
+    .istatistik-kutu {
+        margin: 1.5rem 1rem;
+        padding: 1.5rem 1rem;
+    }
+    
+    .istatistik-tablo {
+        font-size: 0.9rem;
+    }
+    
+    .istatistik-tablo th,
+    .istatistik-tablo td {
+        padding: 0.8rem 0.5rem;
+    }
+}
