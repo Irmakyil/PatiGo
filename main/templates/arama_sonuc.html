@@ -10,7 +10,7 @@
     {% if task_results %}
         {% for task in task_results %}
             <div class="task-list-box">
-                <h3>{{ task.name }}</h3>
+                <h3>{{ task.name|title}}</h3>
                 <p><strong>Öncelik:</strong> {{ task.get_priority_display }}</p>
                 <p><strong>Durum:</strong> {{ task.status }}</p>
                 <p><strong>Bitiş Tarihi:</strong> {{ task.end_time|date:"d.m.Y H:i" }}</p>
